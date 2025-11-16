@@ -16,23 +16,26 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #000000;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
             color: white;
         }
         
         .container {
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
+            max-width: 100%;
+            padding: 20px;
+        }
+        
+        .screen {
+            display: none;
+        }
+        
+        .screen.active {
+            display: block;
         }
         
         .logo {
             font-size: 3rem;
             margin-bottom: 20px;
+            text-align: center;
             background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -41,15 +44,18 @@
         
         .app-title {
             color: white;
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             margin-bottom: 10px;
+            text-align: center;
         }
         
         .app-subtitle {
             color: #888;
-            font-size: 16px;
-            margin-bottom: 40px;
+            font-size: 14px;
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 1.4;
         }
         
         .button-grid {
@@ -57,15 +63,15 @@
             flex-direction: column;
             gap: 15px;
             width: 100%;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         
         .main-button {
             background: #1a1a1a;
             border: 2px solid #333;
             border-radius: 15px;
-            padding: 20px;
-            font-size: 18px;
+            padding: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: white;
             cursor: pointer;
@@ -76,33 +82,12 @@
             gap: 15px;
             text-align: left;
             width: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .main-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transition: left 0.5s;
-        }
-        
-        .main-button:hover::before {
-            left: 100%;
         }
         
         .main-button:hover {
             border-color: #667eea;
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        }
-        
-        .main-button:active {
-            transform: translateY(0);
         }
         
         .button-create {
@@ -133,8 +118,8 @@
         }
         
         .button-icon {
-            font-size: 24px;
-            width: 40px;
+            font-size: 22px;
+            width: 35px;
             text-align: center;
         }
         
@@ -145,27 +130,144 @@
         .button-description {
             font-size: 12px;
             color: #888;
-            margin-top: 5px;
+            margin-top: 3px;
             font-weight: normal;
         }
         
-        .telegram-button {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #fff;
+        }
+        
+        .form-input, .form-textarea {
+            width: 100%;
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 12px 15px;
             color: white;
+            font-size: 14px;
+            resize: vertical;
+        }
+        
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            font-family: inherit;
+        }
+        
+        .currency-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .currency-button {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 15px 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .currency-button:hover, .currency-button.selected {
+            border-color: #4CAF50;
+            background: #2a2a2a;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
             border: none;
-            border-radius: 12px;
-            padding: 15px 20px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            width: 100%;
-            margin-top: 10px;
         }
         
-        .telegram-button:hover {
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #333;
+            color: white;
+        }
+        
+        .btn-back {
+            background: #666;
+            color: white;
+        }
+        
+        .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .info-box {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        
+        .info-box.warning {
+            border-color: #ff9800;
+            background: #332900;
+        }
+        
+        .info-box.success {
+            border-color: #4CAF50;
+            background: #1a331a;
+        }
+        
+        .deal-preview {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .deal-item {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .deal-label {
+            color: #888;
+        }
+        
+        .deal-value {
+            color: white;
+            font-weight: 600;
         }
         
         .loading {
@@ -173,218 +275,342 @@
             pointer-events: none;
         }
         
-        .status-message {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 10px;
-            padding: 10px;
-            margin: 10px 0;
-            font-size: 14px;
-            color: #4CAF50;
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">🛡️</div>
-        <div class="app-title">GARANT BOT</div>
-        <div class="app-subtitle">Secure Crypto Transactions</div>
-        
-        <div id="statusMessage" class="status-message" style="display: none;"></div>
-        
-        <div class="button-grid">
-            <button class="main-button button-create" onclick="createDeal()" id="createDealBtn">
-                <span class="button-icon">🎁</span>
-                <div class="button-text">
-                    Create Deal
-                    <div class="button-description">Secure transaction with guarantor</div>
-                </div>
-            </button>
+    <!-- Главный экран -->
+    <div id="mainScreen" class="screen active">
+        <div class="container">
+            <div class="logo">🛡️</div>
+            <div class="app-title">GARANT BOT</div>
+            <div class="app-subtitle">Secure Crypto Transactions</div>
             
-            <button class="main-button button-profile" onclick="showProfile()" id="showProfileBtn">
-                <span class="button-icon">👤</span>
-                <div class="button-text">
-                    My Profile
-                    <div class="button-description">Balance, rating and statistics</div>
-                </div>
-            </button>
-            
-            <button class="main-button button-withdraw" onclick="withdrawFunds()" id="withdrawFundsBtn">
-                <span class="button-icon">💸</span>
-                <div class="button-text">
-                    Withdraw Funds
-                    <div class="button-description">Withdraw to wallet or card</div>
-                </div>
-            </button>
+            <div class="button-grid">
+                <button class="main-button button-create" onclick="showCreateDealScreen()">
+                    <span class="button-icon">🎁</span>
+                    <div class="button-text">
+                        Create Deal
+                        <div class="button-description">Secure transaction with guarantor</div>
+                    </div>
+                </button>
+                
+                <button class="main-button button-profile" onclick="showProfile()">
+                    <span class="button-icon">👤</span>
+                    <div class="button-text">
+                        My Profile
+                        <div class="button-description">Balance, rating and statistics</div>
+                    </div>
+                </button>
+                
+                <button class="main-button button-withdraw" onclick="withdrawFunds()">
+                    <span class="button-icon">💸</span>
+                    <div class="button-text">
+                        Withdraw Funds
+                        <div class="button-description">Withdraw to wallet or card</div>
+                    </div>
+                </button>
+            </div>
         </div>
-        
-        <button class="telegram-button" onclick="openFullBot()">
-            📱 Open Full Bot
-        </button>
+    </div>
+
+    <!-- Экран создания сделки - Шаг 1: Ссылки на подарки -->
+    <div id="createDealScreen" class="screen">
+        <div class="container">
+            <div class="logo">🎁</div>
+            <div class="app-title">Create Safe Deal</div>
+            <div class="app-subtitle">Step 1: Specify gift links</div>
+            
+            <div class="info-box">
+                <strong>📝 Instructions:</strong><br>
+                • Send one or multiple gift links<br>
+                • Each link on a new line<br>
+                • Formats: https://... or t.me/...<br><br>
+                <strong>Example:</strong><br>
+                <code>t.me/nft/PlushPepe-1</code><br>
+                <code>t.me/nft/PlushPepe-2</code>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Gift Links:</label>
+                <textarea 
+                    class="form-textarea" 
+                    id="giftLinks" 
+                    placeholder="Enter gift links here, each on a new line..."
+                ></textarea>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-back" onclick="showMainScreen()">Back</button>
+                <button class="btn btn-primary" onclick="proceedToCurrency()">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Экран создания сделки - Шаг 2: Выбор валюты -->
+    <div id="currencyScreen" class="screen">
+        <div class="container">
+            <div class="logo">💰</div>
+            <div class="app-title">Select Currency</div>
+            <div class="app-subtitle">Step 2: Choose deal currency</div>
+            
+            <div class="currency-grid">
+                <button class="currency-button" onclick="selectCurrency('RUB')">🇷🇺 RUB</button>
+                <button class="currency-button" onclick="selectCurrency('EUR')">🇪🇺 EUR</button>
+                <button class="currency-button" onclick="selectCurrency('UZS')">🇺🇿 UZS</button>
+                <button class="currency-button" onclick="selectCurrency('KZT')">🇰🇿 KZT</button>
+                <button class="currency-button" onclick="selectCurrency('KGS')">🇰🇬 KGS</button>
+                <button class="currency-button" onclick="selectCurrency('IDR')">🇮🇩 IDR</button>
+                <button class="currency-button" onclick="selectCurrency('UAH')">🇺🇦 UAH</button>
+                <button class="currency-button" onclick="selectCurrency('BYN')">🇧🇾 BYN</button>
+                <button class="currency-button" onclick="selectCurrency('TON')">💎 TON</button>
+                <button class="currency-button" onclick="selectCurrency('STARS')">⭐ Stars</button>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-back" onclick="backToGiftLinks()">Back</button>
+                <button class="btn btn-primary" id="continueCurrencyBtn" onclick="proceedToAmount()" disabled>Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Экран создания сделки - Шаг 3: Сумма -->
+    <div id="amountScreen" class="screen">
+        <div class="container">
+            <div class="logo">💵</div>
+            <div class="app-title">Deal Amount</div>
+            <div class="app-subtitle">Step 3: Enter deal amount in <span id="currencyDisplay"></span></div>
+            
+            <div class="form-group">
+                <label class="form-label">Amount:</label>
+                <input 
+                    type="number" 
+                    class="form-input" 
+                    id="dealAmount" 
+                    placeholder="Enter amount (e.g., 1000)"
+                    step="0.01"
+                    min="0.01"
+                >
+            </div>
+            
+            <div class="info-box">
+                <strong>💡 Note:</strong> Enter the amount in numbers only
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-back" onclick="backToCurrency()">Back</button>
+                <button class="btn btn-primary" onclick="createDealFinal()">Create Deal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Экран подтверждения -->
+    <div id="confirmScreen" class="screen">
+        <div class="container">
+            <div class="logo">✅</div>
+            <div class="app-title">Deal Created!</div>
+            <div class="app-subtitle">Your safe deal has been created successfully</div>
+            
+            <div class="deal-preview">
+                <div class="deal-item">
+                    <span class="deal-label">Gift Links:</span>
+                    <span class="deal-value" id="previewLinks"></span>
+                </div>
+                <div class="deal-item">
+                    <span class="deal-label">Currency:</span>
+                    <span class="deal-value" id="previewCurrency"></span>
+                </div>
+                <div class="deal-item">
+                    <span class="deal-label">Amount:</span>
+                    <span class="deal-value" id="previewAmount"></span>
+                </div>
+            </div>
+            
+            <div class="info-box success">
+                <strong>🎉 Success!</strong><br>
+                Your deal has been created. Share the deal link with the buyer.
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="showMainScreen()">Back to Main</button>
+                <button class="btn btn-secondary" onclick="createAnotherDeal()">Create Another</button>
+            </div>
+        </div>
     </div>
 
     <script>
         // Инициализация Telegram WebApp
         let tg = window.Telegram.WebApp;
-        
-        // Расширяем на весь экран
         tg.expand();
         tg.enableClosingConfirmation();
-        
-        // Устанавливаем черную тему
         tg.setHeaderColor('#000000');
         tg.setBackgroundColor('#000000');
         
-        // Показываем кнопку назад
-        tg.BackButton.show();
-        tg.BackButton.onClick(() => {
-            tg.close();
-        });
+        // Данные сделки
+        let dealData = {
+            giftLinks: '',
+            currency: '',
+            amount: ''
+        };
         
-        // Функция для показа статуса
-        function showStatus(message, isError = false) {
-            const statusElement = document.getElementById('statusMessage');
-            statusElement.textContent = message;
-            statusElement.style.color = isError ? '#ff4444' : '#4CAF50';
-            statusElement.style.display = 'block';
-            
-            setTimeout(() => {
-                statusElement.style.display = 'none';
-            }, 3000);
+        // Показать главный экран
+        function showMainScreen() {
+            hideAllScreens();
+            document.getElementById('mainScreen').classList.add('active');
         }
         
-        // Функция для блокировки кнопок во время выполнения
-        function setButtonLoading(buttonId, isLoading) {
-            const button = document.getElementById(buttonId);
-            if (isLoading) {
-                button.classList.add('loading');
-                button.innerHTML = `
-                    <span class="button-icon">⏳</span>
-                    <div class="button-text">
-                        Processing...
-                        <div class="button-description">Please wait</div>
-                    </div>
-                `;
-            } else {
-                button.classList.remove('loading');
-                // Восстанавливаем оригинальное содержимое кнопки
-                if (buttonId === 'createDealBtn') {
-                    button.innerHTML = `
-                        <span class="button-icon">🎁</span>
-                        <div class="button-text">
-                            Create Deal
-                            <div class="button-description">Secure transaction with guarantor</div>
-                        </div>
-                    `;
-                } else if (buttonId === 'showProfileBtn') {
-                    button.innerHTML = `
-                        <span class="button-icon">👤</span>
-                        <div class="button-text">
-                            My Profile
-                            <div class="button-description">Balance, rating and statistics</div>
-                        </div>
-                    `;
-                } else if (buttonId === 'withdrawFundsBtn') {
-                    button.innerHTML = `
-                        <span class="button-icon">💸</span>
-                        <div class="button-text">
-                            Withdraw Funds
-                            <div class="button-description">Withdraw to wallet or card</div>
-                        </div>
-                    `;
-                }
+        // Показать экран создания сделки
+        function showCreateDealScreen() {
+            hideAllScreens();
+            document.getElementById('createDealScreen').classList.add('active');
+            document.getElementById('giftLinks').value = '';
+        }
+        
+        // Показать экран выбора валюты
+        function proceedToCurrency() {
+            const giftLinks = document.getElementById('giftLinks').value.trim();
+            if (!giftLinks) {
+                alert('Please enter gift links');
+                return;
             }
+            
+            dealData.giftLinks = giftLinks;
+            hideAllScreens();
+            document.getElementById('currencyScreen').classList.add('active');
+            
+            // Сброс выбора валюты
+            document.querySelectorAll('.currency-button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.getElementById('continueCurrencyBtn').disabled = true;
         }
         
-        function createDeal() {
-            const buttonId = 'createDealBtn';
-            setButtonLoading(buttonId, true);
-            showStatus('Opening deal creation...');
+        // Выбор валюты
+        function selectCurrency(currency) {
+            dealData.currency = currency;
             
+            // Обновить UI
+            document.querySelectorAll('.currency-button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            document.getElementById('continueCurrencyBtn').disabled = false;
+        }
+        
+        // Перейти к вводу суммы
+        function proceedToAmount() {
+            if (!dealData.currency) {
+                alert('Please select currency');
+                return;
+            }
+            
+            hideAllScreens();
+            document.getElementById('amountScreen').classList.add('active');
+            document.getElementById('currencyDisplay').textContent = dealData.currency;
+            document.getElementById('dealAmount').value = '';
+        }
+        
+        // Создать сделку
+        function createDealFinal() {
+            const amount = parseFloat(document.getElementById('dealAmount').value);
+            
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            dealData.amount = amount;
+            
+            // Показать экран подтверждения
+            hideAllScreens();
+            document.getElementById('confirmScreen').classList.add('active');
+            
+            // Заполнить превью
+            document.getElementById('previewLinks').textContent = 
+                dealData.giftLinks.split('\n').slice(0, 2).join(', ') + 
+                (dealData.giftLinks.split('\n').length > 2 ? '...' : '');
+            document.getElementById('previewCurrency').textContent = dealData.currency;
+            document.getElementById('previewAmount').textContent = amount + ' ' + dealData.currency;
+            
+            // Отправить данные в бота
+            sendDealToBot();
+        }
+        
+        // Отправить данные сделки в бота
+        function sendDealToBot() {
             try {
-                // Отправляем данные в бота
                 tg.sendData(JSON.stringify({
-                    action: 'create_deal',
-                    timestamp: Date.now(),
-                    source: 'webapp'
+                    action: 'create_deal_full',
+                    gift_links: dealData.giftLinks,
+                    currency: dealData.currency,
+                    amount: dealData.amount,
+                    timestamp: Date.now()
                 }));
                 
-                // Закрываем WebApp через 1 секунду
+                // WebApp закроется автоматически после отправки данных
                 setTimeout(() => {
                     tg.close();
-                }, 1000);
+                }, 3000);
                 
             } catch (error) {
-                console.error('Error sending data:', error);
-                showStatus('Error: Failed to send request', true);
-                setButtonLoading(buttonId, false);
+                console.error('Error sending deal data:', error);
+                alert('Error creating deal. Please try again.');
             }
         }
         
+        // Навигация назад
+        function backToGiftLinks() {
+            hideAllScreens();
+            document.getElementById('createDealScreen').classList.add('active');
+        }
+        
+        function backToCurrency() {
+            hideAllScreens();
+            document.getElementById('currencyScreen').classList.add('active');
+        }
+        
+        // Создать еще одну сделку
+        function createAnotherDeal() {
+            dealData = { giftLinks: '', currency: '', amount: '' };
+            showCreateDealScreen();
+        }
+        
+        // Другие функции
         function showProfile() {
-            const buttonId = 'showProfileBtn';
-            setButtonLoading(buttonId, true);
-            showStatus('Loading profile...');
-            
-            try {
-                tg.sendData(JSON.stringify({
-                    action: 'show_profile',
-                    timestamp: Date.now(),
-                    source: 'webapp'
-                }));
-                
-                setTimeout(() => {
-                    tg.close();
-                }, 1000);
-                
-            } catch (error) {
-                console.error('Error sending data:', error);
-                showStatus('Error: Failed to load profile', true);
-                setButtonLoading(buttonId, false);
-            }
+            tg.sendData(JSON.stringify({
+                action: 'show_profile',
+                timestamp: Date.now()
+            }));
+            setTimeout(() => tg.close(), 500);
         }
         
         function withdrawFunds() {
-            const buttonId = 'withdrawFundsBtn';
-            setButtonLoading(buttonId, true);
-            showStatus('Opening withdrawal...');
-            
-            try {
-                tg.sendData(JSON.stringify({
-                    action: 'withdraw_funds',
-                    timestamp: Date.now(),
-                    source: 'webapp'
-                }));
-                
-                setTimeout(() => {
-                    tg.close();
-                }, 1000);
-                
-            } catch (error) {
-                console.error('Error sending data:', error);
-                showStatus('Error: Failed to open withdrawal', true);
-                setButtonLoading(buttonId, false);
-            }
+            tg.sendData(JSON.stringify({
+                action: 'withdraw_funds',
+                timestamp: Date.now()
+            }));
+            setTimeout(() => tg.close(), 500);
         }
         
-        function openFullBot() {
-            showStatus('Opening bot...');
-            // Замените YOUR_BOT_USERNAME на username вашего бота
-            tg.openTelegramLink('https://t.me/CrystalsFakeCheckBot');
+        // Вспомогательные функции
+        function hideAllScreens() {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
         }
         
-        // Обработчики событий Telegram WebApp
-        tg.onEvent('viewportChanged', (event) => {
-            console.log('Viewport changed:', event);
-        });
-        
-        tg.onEvent('themeChanged', (event) => {
-            console.log('Theme changed:', event);
-        });
-        
-        // Показываем что WebApp готов
+        // Инициализация
         document.addEventListener('DOMContentLoaded', function() {
-            showStatus('WebApp ready!');
+            tg.BackButton.show();
+            tg.BackButton.onClick(() => {
+                if (document.getElementById('mainScreen').classList.contains('active')) {
+                    tg.close();
+                } else {
+                    showMainScreen();
+                }
+            });
         });
     </script>
 </body>
