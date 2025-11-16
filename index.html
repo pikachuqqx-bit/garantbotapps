@@ -1053,7 +1053,7 @@
             localStorage.setItem('withdrawalHistory', JSON.stringify(withdrawalHistory));
         }
 
-        // Загрузка данных пользователя из бота
+        // Загрузка данных пользователя из бота через Telegram WebApp
         function loadUserDataFromBot() {
             if (window.Telegram && window.Telegram.WebApp) {
                 // Отправляем запрос на получение данных пользователя
@@ -1064,12 +1064,22 @@
                 window.Telegram.WebApp.sendData(JSON.stringify(data));
                 
                 // В реальном приложении здесь будет обработка ответа от бота
+                // Для демонстрации используем setTimeout
                 setTimeout(() => {
-                    updateUserData({
-                        balance: 1250.50,
-                        successfulDeals: 12,
-                        rating: 4.8
-                    });
+                    // Получаем данные из Telegram WebApp
+                    const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
+                    if (tgUser) {
+                        updateUserData({
+                            id: tgUser.id,
+                            username: tgUser.username || `user_${tgUser.id}`,
+                            balance: 1250.50,
+                            successfulDeals: 12,
+                            rating: 4.8
+                        });
+                    } else {
+                        // Если данных нет, используем тестовые данные
+                        updateUserData(userData);
+                    }
                 }, 500);
             } else {
                 // Для тестирования вне Telegram
