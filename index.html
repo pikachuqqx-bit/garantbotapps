@@ -42,6 +42,7 @@
             color: var(--text-primary);
             min-height: 100vh;
             padding: 16px;
+            overflow-x: hidden;
         }
 
         .container {
@@ -56,6 +57,11 @@
             margin-bottom: 24px;
             padding-bottom: 16px;
             border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            background: var(--bg-primary);
+            z-index: 100;
+            padding-top: 8px;
         }
 
         .logo {
@@ -64,19 +70,6 @@
             gap: 12px;
             flex: 1;
             justify-content: center;
-        }
-
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
-            color: white;
         }
 
         .logo-text {
@@ -100,17 +93,6 @@
             right: 16px;
             transition: all 0.3s ease;
             box-shadow: 0 2px 8px rgba(187, 134, 252, 0.3);
-        }
-
-        .theme-toggle:hover {
-            background: var(--accent-color);
-            color: white;
-            transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(187, 134, 252, 0.5);
-        }
-
-        .theme-toggle:active {
-            transform: scale(0.95);
         }
 
         .card {
@@ -170,7 +152,7 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
         .back-button {
@@ -282,7 +264,6 @@
             justify-content: center;
             color: white;
             font-size: 20px;
-            transform: none !important;
         }
 
         .success-message {
@@ -658,6 +639,44 @@
         .delay-3 { animation-delay: 0.3s; }
         .delay-4 { animation-delay: 0.4s; }
         .delay-5 { animation-delay: 0.5s; }
+
+        /* Оптимизации для мини-приложения */
+        .tg-button {
+            background-color: #2481cc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .sync-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: var(--accent-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            z-index: 1000;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-color);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
     </style>
 </head>
 <body>
@@ -674,6 +693,12 @@
         </div>
     </div>
 
+    <!-- Индикатор синхронизации -->
+    <div class="sync-indicator hidden" id="syncIndicator">🔄 Синхронизация...</div>
+
+    <!-- Уведомление -->
+    <div class="notification hidden" id="notification"></div>
+
     <div class="container">
         <!-- Шапка с логотипом и переключателем темы -->
         <div class="header">
@@ -682,7 +707,7 @@
                     <i>←</i>
                 </button>
                 <div class="logo">
-                    <div class="logo-text">🛡 Crystal Trust - Safe & Automatic</div>
+                    <div class="logo-text">🛡 Crystal Trust</div>
                 </div>
                 <button class="theme-toggle" id="themeToggle">
                     <i>🌙</i>
@@ -708,6 +733,9 @@
                 <div class="button button-secondary" id="profileBtn">
                     <i>👤</i> Профиль
                 </div>
+                <button class="tg-button" id="syncDataBtn">
+                    🔄 Синхронизировать данные
+                </button>
             </div>
         </div>
 
@@ -767,14 +795,14 @@
                         <div class="withdraw-icon">💎</div>
                         <div>
                             <div class="info-value">TON кошелек</div>
-                            <div class="wallet-address" id="tonWallet">UQAPAz_HELXWFbD1ZYKUxgRc_h5wPwIUD3wlZslOy5xzpyTg</div>
+                            <div class="wallet-address" id="tonWallet">Не указан</div>
                         </div>
                     </div>
                     <div class="withdraw-option" data-method="CARD">
                         <div class="withdraw-icon">💳</div>
                         <div>
                             <div class="info-value">Банковская карта</div>
-                            <div class="wallet-address" id="cardDetails">+79290556299 - Сбп</div>
+                            <div class="wallet-address" id="cardDetails">Не указаны</div>
                         </div>
                     </div>
                 </div>
@@ -820,18 +848,18 @@
 
                 <div class="stats">
                     <div class="stat-card">
-                        <div class="stat-value" id="profileBalance">1250.5</div>
+                        <div class="stat-value" id="profileBalance">0</div>
                         <div class="stat-label">Баланс</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" id="profileDeals">12</div>
+                        <div class="stat-value" id="profileDeals">0</div>
                         <div class="stat-label">Успешных сделок</div>
                     </div>
                 </div>
 
                 <div class="info-row">
                     <span class="info-label">Дата регистрации:</span>
-                    <span class="info-value" id="profileRegDate">15.01.2024</span>
+                    <span class="info-value" id="profileRegDate">--.--.----</span>
                 </div>
             </div>
 
@@ -848,7 +876,7 @@
                 <div class="requisites-form">
                     <div class="form-group">
                         <label class="form-label">TON кошелек</label>
-                        <input type="text" class="form-input" id="tonWalletInput" placeholder="Введите адрес TON кошелька" value="UQAPAz_HELXWFbD1ZYKUxgRc_h5wPwIUD3wlZslOy5xzpyTg">
+                        <input type="text" class="form-input" id="tonWalletInput" placeholder="Введите адрес TON кошелька">
                         <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
                             Пример: UQAPAz_HELXWFbD1ZYKUxgRc_h5wPwIUD3wlZslOy5xzpyTg
                         </div>
@@ -856,7 +884,7 @@
                     
                     <div class="form-group">
                         <label class="form-label">Банковская карта</label>
-                        <input type="text" class="form-input" id="cardDetailsInput" placeholder="Введите реквизиты карты" value="+79290556299 - Сбп">
+                        <input type="text" class="form-input" id="cardDetailsInput" placeholder="Введите реквизиты карты">
                         <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
                             Пример: +79290556299 - Сбп
                         </div>
@@ -891,212 +919,183 @@
     </div>
 
     <script>
-        // Данные пользователя (синхронизируются с ботом)
-        let userData = {
-            id: 6521371413,
-            username: '@username',
-            rating: 4.8,
-            balance: 1250.50,
-            successfulDeals: 12,
-            registrationDate: '15.01.2024',
-            tonWallet: 'UQAPAz_HELXWFbD1ZYKUxgRc_h5wPwIUD3wlZslOy5xzpyTg',
-            cardDetails: '+79290556299 - Сбп'
+        // Конфигурация
+        const BOT_CONFIG = {
+            token: '8188600941:AAFVJ1WviuwTPF2QCZwl2QfdFoUSX3ZnvYI',
+            webAppUrl: 'https://t.me/CrystalsGarantBot/webapp',
+            supportUsername: 'CrystalsSupport'
         };
 
-        // Данные сделок
+        // Глобальные переменные
+        let userData = {
+            id: null,
+            username: '@username',
+            rating: 5.0,
+            balance: 0,
+            successfulDeals: 0,
+            registrationDate: '--.--.----',
+            tonWallet: '',
+            cardDetails: '',
+            isAdmin: false
+        };
+
         let userDeals = [];
-
-        // Данные истории выводов (пустая при первом запуске)
         let withdrawalHistory = [];
-
-        // Таймеры для автоматического обновления статусов
         let withdrawalTimers = {};
+        let currentScreen = 'main';
+        let tgWebApp = null;
 
         // Элементы DOM
-        const themeToggle = document.getElementById('themeToggle');
-        const backButton = document.getElementById('backButton');
-        const mainScreen = document.getElementById('mainScreen');
-        const createDealScreen = document.getElementById('createDealScreen');
-        const myDealsScreen = document.getElementById('myDealsScreen');
-        const withdrawScreen = document.getElementById('withdrawScreen');
-        const withdrawalHistoryScreen = document.getElementById('withdrawalHistoryScreen');
-        const profileScreen = document.getElementById('profileScreen');
-        const requisitesScreen = document.getElementById('requisitesScreen');
-        const dealSuccessScreen = document.getElementById('dealSuccessScreen');
-        const dealsList = document.getElementById('dealsList');
-        const withdrawalsList = document.getElementById('withdrawalsList');
-        const loadingProgress = document.getElementById('loadingProgress');
-        const loadingScreen = document.getElementById('loadingScreen');
-        const loadingPercentage = document.getElementById('loadingPercentage');
-
-        // Кнопки навигации
-        const createDealBtn = document.getElementById('createDealBtn');
-        const myDealsBtn = document.getElementById('myDealsBtn');
-        const withdrawBtn = document.getElementById('withdrawBtn');
-        const withdrawalHistoryBtn = document.getElementById('withdrawalHistoryBtn');
-        const profileBtn = document.getElementById('profileBtn');
-        const changeRequisitesBtn = document.getElementById('changeRequisitesBtn');
-        
-        // Кнопки возврата
-        const backToMainFromSuccess = document.getElementById('backToMainFromSuccess');
-
-        // Элементы формы создания сделки
-        const currencyOptions = document.querySelectorAll('.currency-option');
-        const createDealSubmit = document.getElementById('createDealSubmit');
-
-        // Элементы вывода средств
-        const withdrawOptions = document.querySelectorAll('.withdraw-option');
-        const withdrawSubmit = document.getElementById('withdrawSubmit');
-
-        // Элементы изменения реквизитов
-        const saveRequisitesBtn = document.getElementById('saveRequisites');
-        const tonWalletInput = document.getElementById('tonWalletInput');
-        const cardDetailsInput = document.getElementById('cardDetailsInput');
-
-        // Текущий экран
-        let currentScreen = 'main';
+        const elements = {
+            themeToggle: document.getElementById('themeToggle'),
+            backButton: document.getElementById('backButton'),
+            mainScreen: document.getElementById('mainScreen'),
+            createDealScreen: document.getElementById('createDealScreen'),
+            myDealsScreen: document.getElementById('myDealsScreen'),
+            withdrawScreen: document.getElementById('withdrawScreen'),
+            withdrawalHistoryScreen: document.getElementById('withdrawalHistoryScreen'),
+            profileScreen: document.getElementById('profileScreen'),
+            requisitesScreen: document.getElementById('requisitesScreen'),
+            dealSuccessScreen: document.getElementById('dealSuccessScreen'),
+            dealsList: document.getElementById('dealsList'),
+            withdrawalsList: document.getElementById('withdrawalsList'),
+            loadingProgress: document.getElementById('loadingProgress'),
+            loadingScreen: document.getElementById('loadingScreen'),
+            loadingPercentage: document.getElementById('loadingPercentage'),
+            syncIndicator: document.getElementById('syncIndicator'),
+            notification: document.getElementById('notification'),
+            syncDataBtn: document.getElementById('syncDataBtn')
+        };
 
         // Инициализация приложения
         document.addEventListener('DOMContentLoaded', function() {
-            // Запускаем процесс загрузки
-            startLoading();
+            initializeApp();
         });
 
-        // Процесс загрузки приложения
-        function startLoading() {
-            let progress = 0;
-            const loadingInterval = setInterval(() => {
-                progress += Math.random() * 15;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(loadingInterval);
-                    
-                    // Завершаем загрузку
-                    setTimeout(finishLoading, 500);
-                }
-                loadingProgress.style.width = progress + '%';
-                loadingPercentage.textContent = Math.round(progress) + '%';
-            }, 200);
-        }
-
-        // Завершение загрузки
-        function finishLoading() {
-            // Скрываем экран загрузки
-            loadingScreen.style.opacity = '0';
-            setTimeout(() => {
-                loadingScreen.style.display = 'none';
+        // Основная функция инициализации
+        async function initializeApp() {
+            try {
+                await startLoading();
                 
-                // Инициализируем приложение
-                initializeApp();
-            }, 500);
-        }
-
-        // Инициализация приложения после загрузки
-        function initializeApp() {
-            // Проверяем, первый ли это запуск
-            const isFirstRun = localStorage.getItem('firstRun') === null;
-            if (isFirstRun) {
-                // Первый запуск - очищаем историю выводов
-                withdrawalHistory = [];
-                localStorage.setItem('firstRun', 'false');
-            } else {
-                // Не первый запуск - загружаем историю из localStorage
-                const savedHistory = localStorage.getItem('withdrawalHistory');
-                if (savedHistory) {
-                    withdrawalHistory = JSON.parse(savedHistory);
-                    
-                    // Восстанавливаем таймеры для ожидающих заявок
-                    withdrawalHistory.forEach(withdrawal => {
-                        if (withdrawal.status === 'pending' && withdrawal.createdAt) {
-                            startWithdrawalTimer(withdrawal.id, withdrawal.createdAt);
-                        }
-                    });
-                }
+                // Инициализация Telegram WebApp
+                await initializeTelegramWebApp();
+                
+                // Загрузка данных
+                await loadAllData();
+                
+                // Настройка интерфейса
+                setupEventListeners();
+                animateElements();
+                
+                await finishLoading();
+                
+                // Показываем уведомление о успешной загрузке
+                showNotification('Приложение успешно загружено!', 'success');
+                
+            } catch (error) {
+                console.error('Ошибка инициализации:', error);
+                showNotification('Ошибка загрузки приложения', 'error');
+                await finishLoading();
             }
-            
-            // Загрузка данных из бота
-            loadUserDataFromBot();
-            
-            // Установка обработчиков событий
-            setupEventListeners();
-            
-            // Проверка сохраненной темы
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'light') {
-                document.body.classList.add('light-theme');
-                themeToggle.innerHTML = '<i>☀️</i>';
-            }
-            
-            // Показываем элементы с анимацией
-            animateElements();
         }
 
-        // Анимация появления элементов
-        function animateElements() {
-            // Анимируем карточки
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                card.classList.add('visible');
-            });
-            
-            // Анимируем кнопки с задержкой
-            const buttons = document.querySelectorAll('.button');
-            buttons.forEach((button, index) => {
-                setTimeout(() => {
-                    button.classList.add('visible');
-                }, 100 * index);
-            });
-        }
-
-        // Сохранение истории выводов в localStorage
-        function saveWithdrawalHistory() {
-            localStorage.setItem('withdrawalHistory', JSON.stringify(withdrawalHistory));
-        }
-
-        // Загрузка данных пользователя из бота через Telegram WebApp
-        function loadUserDataFromBot() {
+        // Инициализация Telegram WebApp
+        async function initializeTelegramWebApp() {
             if (window.Telegram && window.Telegram.WebApp) {
-                // Отправляем запрос на получение данных пользователя
-                const data = {
-                    action: 'get_user_data'
-                };
+                tgWebApp = window.Telegram.WebApp;
                 
-                window.Telegram.WebApp.sendData(JSON.stringify(data));
+                // Инициализация WebApp
+                tgWebApp.ready();
+                tgWebApp.expand();
                 
-                // В реальном приложении здесь будет обработка ответа от бота
-                // Для демонстрации используем setTimeout
-                setTimeout(() => {
-                    // Получаем данные из Telegram WebApp
-                    const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
-                    if (tgUser) {
-                        updateUserData({
-                            id: tgUser.id,
-                            username: tgUser.username || `user_${tgUser.id}`,
-                            balance: 1250.50,
-                            successfulDeals: 12,
-                            rating: 4.8
-                        });
-                    } else {
-                        // Если данных нет, используем тестовые данные
-                        updateUserData(userData);
-                    }
-                }, 500);
+                // Получение данных пользователя
+                const tgUser = tgWebApp.initDataUnsafe.user;
+                if (tgUser) {
+                    userData.id = tgUser.id;
+                    userData.username = tgUser.username ? `@${tgUser.username}` : `user_${tgUser.id}`;
+                    
+                    // Обновляем аватар
+                    document.getElementById('profileAvatar').textContent = 
+                        tgUser.username ? tgUser.username.charAt(0).toUpperCase() : 'U';
+                }
+                
+                console.log('Telegram WebApp инициализирован:', tgUser);
             } else {
-                // Для тестирования вне Telegram
-                updateUserData(userData);
+                console.log('Telegram WebApp не доступен, используется демо-режим');
+                // Демо-данные для тестирования
+                userData.id = 6521371413;
+                userData.username = '@test_user';
+            }
+        }
+
+        // Загрузка всех данных
+        async function loadAllData() {
+            showSyncIndicator();
+            
+            try {
+                await Promise.all([
+                    loadUserData(),
+                    loadUserDeals(),
+                    loadWithdrawalHistory()
+                ]);
+                
+                hideSyncIndicator();
+            } catch (error) {
+                console.error('Ошибка загрузки данных:', error);
+                hideSyncIndicator();
+                throw error;
+            }
+        }
+
+        // Загрузка данных пользователя
+        async function loadUserData() {
+            try {
+                if (tgWebApp) {
+                    // Отправляем запрос к боту через WebApp
+                    const response = await sendDataToBot({
+                        action: 'get_user_data',
+                        user_id: userData.id
+                    });
+                    
+                    if (response && response.success) {
+                        updateUserData(response.data);
+                    } else {
+                        // Используем данные из localStorage как fallback
+                        loadUserDataFromStorage();
+                    }
+                } else {
+                    loadUserDataFromStorage();
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки данных пользователя:', error);
+                loadUserDataFromStorage();
+            }
+        }
+
+        // Загрузка данных пользователя из localStorage
+        function loadUserDataFromStorage() {
+            const savedData = localStorage.getItem('userData');
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                updateUserData(parsedData);
             }
         }
 
         // Обновление данных пользователя
         function updateUserData(newData) {
             userData = { ...userData, ...newData };
-            loadUserData();
+            saveUserDataToStorage();
+            updateUserInterface();
         }
 
-        // Загрузка данных пользователя в интерфейс
-        function loadUserData() {
-            // Заполнение профиля
-            document.getElementById('profileAvatar').textContent = userData.username.charAt(1).toUpperCase();
+        // Сохранение данных пользователя в localStorage
+        function saveUserDataToStorage() {
+            localStorage.setItem('userData', JSON.stringify(userData));
+        }
+
+        // Обновление интерфейса пользователя
+        function updateUserInterface() {
+            // Профиль
             document.getElementById('profileUsername').textContent = userData.username;
             document.getElementById('profileUserId').textContent = `ID: ${userData.id}`;
             document.getElementById('profileRatingStars').textContent = getRatingStars(userData.rating);
@@ -1105,26 +1104,118 @@
             document.getElementById('profileDeals').textContent = userData.successfulDeals;
             document.getElementById('profileRegDate').textContent = userData.registrationDate;
 
-            // Заполнение реквизитов для вывода
-            document.getElementById('tonWallet').textContent = userData.tonWallet;
-            document.getElementById('cardDetails').textContent = userData.cardDetails;
-
-            // Заполнение полей ввода реквизитов
-            tonWalletInput.value = userData.tonWallet;
-            cardDetailsInput.value = userData.cardDetails;
+            // Реквизиты
+            document.getElementById('tonWallet').textContent = userData.tonWallet || 'Не указан';
+            document.getElementById('cardDetails').textContent = userData.cardDetails || 'Не указаны';
+            document.getElementById('tonWalletInput').value = userData.tonWallet || '';
+            document.getElementById('cardDetailsInput').value = userData.cardDetails || '';
         }
 
-        // Загрузка списка сделок из бота
-        function loadDealsFromBot() {
-            if (window.Telegram && window.Telegram.WebApp) {
-                const data = {
-                    action: 'get_user_deals'
-                };
-                
-                window.Telegram.WebApp.sendData(JSON.stringify(data));
-                
-                setTimeout(() => {
-                    userDeals = [
+        // Загрузка сделок пользователя
+        async function loadUserDeals() {
+            try {
+                if (tgWebApp) {
+                    const response = await sendDataToBot({
+                        action: 'get_user_deals',
+                        user_id: userData.id
+                    });
+                    
+                    if (response && response.success) {
+                        userDeals = response.data || [];
+                    } else {
+                        loadDealsFromStorage();
+                    }
+                } else {
+                    loadDealsFromStorage();
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки сделок:', error);
+                loadDealsFromStorage();
+            }
+        }
+
+        // Загрузка сделок из localStorage
+        function loadDealsFromStorage() {
+            const savedDeals = localStorage.getItem('userDeals');
+            if (savedDeals) {
+                userDeals = JSON.parse(savedDeals);
+            }
+        }
+
+        // Загрузка истории выводов
+        async function loadWithdrawalHistory() {
+            try {
+                if (tgWebApp) {
+                    const response = await sendDataToBot({
+                        action: 'get_withdrawal_history',
+                        user_id: userData.id
+                    });
+                    
+                    if (response && response.success) {
+                        withdrawalHistory = response.data || [];
+                    } else {
+                        loadWithdrawalHistoryFromStorage();
+                    }
+                } else {
+                    loadWithdrawalHistoryFromStorage();
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки истории выводов:', error);
+                loadWithdrawalHistoryFromStorage();
+            }
+        }
+
+        // Загрузка истории выводов из localStorage
+        function loadWithdrawalHistoryFromStorage() {
+            const savedHistory = localStorage.getItem('withdrawalHistory');
+            if (savedHistory) {
+                withdrawalHistory = JSON.parse(savedHistory);
+            }
+        }
+
+        // Отправка данных боту
+        async function sendDataToBot(data) {
+            return new Promise((resolve) => {
+                if (tgWebApp) {
+                    // Отправка данных через Telegram WebApp
+                    tgWebApp.sendData(JSON.stringify(data));
+                    
+                    // В реальном приложении здесь должен быть механизм получения ответа
+                    // Для демонстрации используем setTimeout
+                    setTimeout(() => {
+                        resolve({
+                            success: true,
+                            data: generateMockResponse(data)
+                        });
+                    }, 1000);
+                } else {
+                    // Fallback для тестирования
+                    setTimeout(() => {
+                        resolve({
+                            success: true,
+                            data: generateMockResponse(data)
+                        });
+                    }, 500);
+                }
+            });
+        }
+
+        // Генерация мок-ответов для тестирования
+        function generateMockResponse(request) {
+            switch (request.action) {
+                case 'get_user_data':
+                    return {
+                        balance: 1250.50,
+                        successfulDeals: 12,
+                        rating: 4.8,
+                        tonWallet: 'UQAPAz_HELXWFbD1ZYKUxgRc_h5wPwIUD3wlZslOy5xzpyTg',
+                        cardDetails: '+79290556299 - Сбп',
+                        registrationDate: '15.01.2024',
+                        isAdmin: false
+                    };
+                    
+                case 'get_user_deals':
+                    return [
                         {
                             id: 'deal_001',
                             amount: 150.50,
@@ -1142,43 +1233,393 @@
                             status: 'completed',
                             created: '2024-01-18 10:15',
                             link: 'https://t.me/CrystalsGarantBot?start=deal_002'
-                        },
-                        {
-                            id: 'deal_003',
-                            amount: 200.00,
-                            currency: 'USD',
-                            description: 'Стимерский набор',
-                            status: 'active',
-                            created: '2024-01-22 16:45',
-                            link: 'https://t.me/CrystalsGarantBot?start=deal_003'
                         }
                     ];
-                    loadDealsList();
-                }, 500);
-            } else {
-                loadDealsList();
+                    
+                case 'get_withdrawal_history':
+                    return [
+                        {
+                            id: 'withdraw_001',
+                            amount: 100.00,
+                            currency: 'TON',
+                            method: 'TON кошелек',
+                            status: 'completed',
+                            created: '2024-01-19 16:45',
+                            requisites: 'UQAPAz_HELXWFbD1ZYKUxgRc_h5wPwIUD3wlZslOy5xzpyTg'
+                        }
+                    ];
+                    
+                case 'create_deal':
+                    return {
+                        deal_id: 'deal_' + Date.now(),
+                        success: true
+                    };
+                    
+                case 'withdraw_funds':
+                    return {
+                        request_id: 'withdraw_' + Date.now(),
+                        success: true
+                    };
+                    
+                case 'update_requisites':
+                    return {
+                        success: true
+                    };
+                    
+                default:
+                    return null;
             }
         }
 
-        // Загрузка истории выводов из бота
-        function loadWithdrawalHistoryFromBot() {
-            if (window.Telegram && window.Telegram.WebApp) {
-                const data = {
-                    action: 'get_withdrawal_history'
-                };
-                
-                window.Telegram.WebApp.sendData(JSON.stringify(data));
-                
+        // Показать индикатор синхронизации
+        function showSyncIndicator() {
+            elements.syncIndicator.classList.remove('hidden');
+        }
+
+        // Скрыть индикатор синхронизации
+        function hideSyncIndicator() {
+            elements.syncIndicator.classList.add('hidden');
+        }
+
+        // Показать уведомление
+        function showNotification(message, type = 'info') {
+            const notification = elements.notification;
+            notification.textContent = message;
+            notification.style.background = type === 'error' ? '#f44336' : 
+                                           type === 'success' ? '#4CAF50' : 
+                                           'var(--accent-color)';
+            notification.classList.remove('hidden');
+            
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Процесс загрузки
+        async function startLoading() {
+            return new Promise((resolve) => {
+                let progress = 0;
+                const loadingInterval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(loadingInterval);
+                        resolve();
+                    }
+                    elements.loadingProgress.style.width = progress + '%';
+                    elements.loadingPercentage.textContent = Math.round(progress) + '%';
+                }, 200);
+            });
+        }
+
+        // Завершение загрузки
+        async function finishLoading() {
+            elements.loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+                elements.loadingScreen.classList.add('hidden');
+            }, 500);
+        }
+
+        // Анимация появления элементов
+        function animateElements() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.classList.add('visible');
+            });
+            
+            const buttons = document.querySelectorAll('.button');
+            buttons.forEach((button, index) => {
                 setTimeout(() => {
-                    loadWithdrawalHistory();
-                }, 500);
+                    button.classList.add('visible');
+                }, 100 * index);
+            });
+        }
+
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            // Навигация
+            document.getElementById('createDealBtn').addEventListener('click', () => showScreen('createDeal'));
+            document.getElementById('myDealsBtn').addEventListener('click', () => {
+                loadDealsList();
+                showScreen('myDeals');
+            });
+            document.getElementById('withdrawBtn').addEventListener('click', () => showScreen('withdraw'));
+            document.getElementById('withdrawalHistoryBtn').addEventListener('click', () => {
+                loadWithdrawalHistoryList();
+                showScreen('withdrawalHistory');
+            });
+            document.getElementById('profileBtn').addEventListener('click', () => showScreen('profile'));
+            document.getElementById('changeRequisitesBtn').addEventListener('click', () => showScreen('requisites'));
+            document.getElementById('syncDataBtn').addEventListener('click', syncAllData);
+            
+            // Кнопки возврата
+            elements.backButton.addEventListener('click', () => showScreen('main'));
+            document.getElementById('backToMainFromSuccess').addEventListener('click', () => showScreen('main'));
+            
+            // Создание сделки
+            document.getElementById('createDealSubmit').addEventListener('click', createDeal);
+            
+            // Вывод средств
+            document.getElementById('withdrawSubmit').addEventListener('click', withdrawFunds);
+            
+            // Сохранение реквизитов
+            document.getElementById('saveRequisites').addEventListener('click', saveRequisites);
+            
+            // Копирование ссылки
+            document.getElementById('copyDealLink').addEventListener('click', copyDealLink);
+            
+            // Выбор валюты
+            document.querySelectorAll('.currency-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.currency-option').forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Выбор метода вывода
+            document.querySelectorAll('.withdraw-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.withdraw-option').forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Переключение темы
+            elements.themeToggle.addEventListener('click', toggleTheme);
+        }
+
+        // Показать экран
+        function showScreen(screen) {
+            // Скрыть все экраны
+            document.querySelectorAll('div[id$="Screen"]').forEach(screenElement => {
+                screenElement.classList.add('hidden');
+            });
+            
+            // Показать/скрыть кнопку возврата
+            if (screen === 'main') {
+                elements.backButton.classList.add('hidden');
             } else {
-                loadWithdrawalHistory();
+                elements.backButton.classList.remove('hidden');
+            }
+            
+            // Показать нужный экран
+            currentScreen = screen;
+            const screenElement = document.getElementById(screen + 'Screen');
+            if (screenElement) {
+                screenElement.classList.remove('hidden');
+            }
+            
+            // Анимируем элементы
+            setTimeout(animateElements, 50);
+        }
+
+        // Создание сделки
+        async function createDeal() {
+            const giftLinks = document.getElementById('giftLinks').value;
+            const selectedCurrency = document.querySelector('.currency-option.selected');
+            const amount = document.getElementById('dealAmount').value;
+            
+            if (!giftLinks.trim()) {
+                showNotification('Пожалуйста, введите ссылки на подарки', 'error');
+                return;
+            }
+            
+            if (!selectedCurrency) {
+                showNotification('Пожалуйста, выберите валюту', 'error');
+                return;
+            }
+            
+            if (!amount || amount <= 0) {
+                showNotification('Пожалуйста, введите корректную сумму', 'error');
+                return;
+            }
+            
+            const currency = selectedCurrency.getAttribute('data-currency');
+            
+            try {
+                showSyncIndicator();
+                
+                const response = await sendDataToBot({
+                    action: 'create_deal',
+                    gift_links: giftLinks,
+                    currency: currency,
+                    amount: parseFloat(amount),
+                    user_id: userData.id
+                });
+                
+                if (response && response.success) {
+                    // Обновляем локальные данные
+                    const newDeal = {
+                        id: response.data.deal_id,
+                        amount: parseFloat(amount),
+                        currency: currency,
+                        description: giftLinks,
+                        status: 'active',
+                        created: new Date().toLocaleString('ru-RU'),
+                        link: `https://t.me/CrystalsGarantBot?start=${response.data.deal_id}`
+                    };
+                    
+                    userDeals.unshift(newDeal);
+                    saveDealsToStorage();
+                    
+                    // Показываем экран успеха
+                    document.getElementById('dealLink').textContent = newDeal.link;
+                    showScreen('dealSuccess');
+                    
+                    showNotification('Сделка успешно создана!', 'success');
+                    
+                    // Очистка формы
+                    document.getElementById('giftLinks').value = '';
+                    document.getElementById('dealAmount').value = '';
+                    document.querySelectorAll('.currency-option').forEach(opt => opt.classList.remove('selected'));
+                    
+                } else {
+                    showNotification('Ошибка при создании сделки', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Ошибка создания сделки:', error);
+                showNotification('Ошибка при создании сделки', 'error');
+            } finally {
+                hideSyncIndicator();
             }
         }
 
-        // Загрузка списка сделок
+        // Вывод средств
+        async function withdrawFunds() {
+            const selectedMethod = document.querySelector('.withdraw-option.selected');
+            const amount = document.getElementById('withdrawAmount').value;
+            
+            if (!selectedMethod) {
+                showNotification('Пожалуйста, выберите метод вывода', 'error');
+                return;
+            }
+            
+            if (!amount || amount <= 0) {
+                showNotification('Пожалуйста, введите корректную сумму', 'error');
+                return;
+            }
+            
+            if (amount > userData.balance) {
+                showNotification('Недостаточно средств на балансе', 'error');
+                return;
+            }
+            
+            const method = selectedMethod.getAttribute('data-method');
+            const requisites = method === 'TON' ? userData.tonWallet : userData.cardDetails;
+            
+            if (!requisites) {
+                showNotification('Пожалуйста, укажите реквизиты для вывода', 'error');
+                return;
+            }
+            
+            try {
+                showSyncIndicator();
+                
+                const response = await sendDataToBot({
+                    action: 'withdraw_funds',
+                    method: method,
+                    amount: parseFloat(amount),
+                    requisites: requisites,
+                    user_id: userData.id,
+                    currency: 'TON'
+                });
+                
+                if (response && response.success) {
+                    // Обновляем локальные данные
+                    const newWithdrawal = {
+                        id: response.data.request_id,
+                        amount: parseFloat(amount),
+                        currency: 'TON',
+                        method: method === 'TON' ? 'TON кошелек' : 'Банковская карта',
+                        status: 'pending',
+                        created: new Date().toLocaleString('ru-RU'),
+                        createdAt: new Date().toISOString(),
+                        requisites: requisites
+                    };
+                    
+                    withdrawalHistory.unshift(newWithdrawal);
+                    saveWithdrawalHistoryToStorage();
+                    
+                    // Обновляем баланс
+                    userData.balance -= parseFloat(amount);
+                    saveUserDataToStorage();
+                    updateUserInterface();
+                    
+                    showNotification('Заявка на вывод создана!', 'success');
+                    showScreen('main');
+                    
+                } else {
+                    showNotification('Ошибка при создании заявки на вывод', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Ошибка вывода средств:', error);
+                showNotification('Ошибка при создании заявки на вывод', 'error');
+            } finally {
+                hideSyncIndicator();
+            }
+        }
+
+        // Сохранение реквизитов
+        async function saveRequisites() {
+            const tonWallet = document.getElementById('tonWalletInput').value;
+            const cardDetails = document.getElementById('cardDetailsInput').value;
+            
+            if (!tonWallet.trim() && !cardDetails.trim()) {
+                showNotification('Пожалуйста, заполните хотя бы один из реквизитов', 'error');
+                return;
+            }
+            
+            try {
+                showSyncIndicator();
+                
+                const response = await sendDataToBot({
+                    action: 'update_requisites',
+                    ton_wallet: tonWallet,
+                    card_details: cardDetails,
+                    user_id: userData.id
+                });
+                
+                if (response && response.success) {
+                    // Обновляем локальные данные
+                    userData.tonWallet = tonWallet;
+                    userData.cardDetails = cardDetails;
+                    saveUserDataToStorage();
+                    updateUserInterface();
+                    
+                    showNotification('Реквизиты успешно сохранены!', 'success');
+                    showScreen('profile');
+                    
+                } else {
+                    showNotification('Ошибка при сохранении реквизитов', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Ошибка сохранения реквизитов:', error);
+                showNotification('Ошибка при сохранении реквизитов', 'error');
+            } finally {
+                hideSyncIndicator();
+            }
+        }
+
+        // Синхронизация всех данных
+        async function syncAllData() {
+            try {
+                showSyncIndicator();
+                await loadAllData();
+                showNotification('Данные успешно синхронизированы!', 'success');
+            } catch (error) {
+                console.error('Ошибка синхронизации:', error);
+                showNotification('Ошибка синхронизации данных', 'error');
+            } finally {
+                hideSyncIndicator();
+            }
+        }
+
+        // Загрузка списка сделок в интерфейс
         function loadDealsList() {
+            const dealsList = document.getElementById('dealsList');
             dealsList.innerHTML = '';
             
             if (userDeals.length === 0) {
@@ -1198,8 +1639,9 @@
             });
         }
 
-        // Загрузка истории выводов
-        function loadWithdrawalHistory() {
+        // Загрузка истории выводов в интерфейс
+        function loadWithdrawalHistoryList() {
+            const withdrawalsList = document.getElementById('withdrawalsList');
             withdrawalsList.innerHTML = '';
             
             if (withdrawalHistory.length === 0) {
@@ -1244,23 +1686,22 @@
                 </div>
             `;
             
+            // Добавляем обработчик копирования
+            dealElement.querySelector('.copy-deal-link').addEventListener('click', function() {
+                const link = this.getAttribute('data-link');
+                copyToClipboard(link);
+            });
+            
             return dealElement;
         }
 
-        // Создание элемента заявки на вывод
+        // Создание элемента вывода
         function createWithdrawalElement(withdrawal) {
             const withdrawalElement = document.createElement('div');
             withdrawalElement.className = 'withdrawal-item';
-            withdrawalElement.id = `withdrawal-${withdrawal.id}`;
             
             const statusClass = `status-${withdrawal.status}`;
             const statusText = getWithdrawalStatusText(withdrawal.status);
-            
-            let countdownHtml = '';
-            if (withdrawal.status === 'pending' && withdrawal.createdAt) {
-                const timeLeft = calculateTimeLeft(withdrawal.createdAt);
-                countdownHtml = `<div class="countdown-timer">Ожидание: ${timeLeft}</div>`;
-            }
             
             withdrawalElement.innerHTML = `
                 <div class="withdrawal-header">
@@ -1272,81 +1713,23 @@
                     <div class="withdrawal-method">${withdrawal.method}</div>
                     <div class="wallet-address">${withdrawal.requisites}</div>
                     <div class="withdrawal-date">${withdrawal.created}</div>
-                    ${countdownHtml}
                 </div>
             `;
             
             return withdrawalElement;
         }
 
-        // Расчет оставшегося времени
-        function calculateTimeLeft(createdAt) {
-            const createdTime = new Date(createdAt).getTime();
-            const currentTime = new Date().getTime();
-            const elapsedTime = currentTime - createdTime;
-            const remainingTime = 20 * 60 * 1000 - elapsedTime; // 20 минут в миллисекундах
-            
-            if (remainingTime <= 0) {
-                return '00:00';
-            }
-            
-            const minutes = Math.floor(remainingTime / (60 * 1000));
-            const seconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
-            
-            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        // Сохранение сделок в localStorage
+        function saveDealsToStorage() {
+            localStorage.setItem('userDeals', JSON.stringify(userDeals));
         }
 
-        // Запуск таймера для заявки на вывод
-        function startWithdrawalTimer(withdrawalId, createdAt) {
-            // Очищаем предыдущий таймер, если он есть
-            if (withdrawalTimers[withdrawalId]) {
-                clearInterval(withdrawalTimers[withdrawalId]);
-            }
-            
-            withdrawalTimers[withdrawalId] = setInterval(() => {
-                const withdrawalElement = document.getElementById(`withdrawal-${withdrawalId}`);
-                if (withdrawalElement) {
-                    const timeLeft = calculateTimeLeft(createdAt);
-                    const countdownElement = withdrawalElement.querySelector('.countdown-timer');
-                    
-                    if (countdownElement) {
-                        if (timeLeft === '00:00') {
-                            // Время вышло - меняем статус на "Выполнен"
-                            completeWithdrawal(withdrawalId);
-                            clearInterval(withdrawalTimers[withdrawalId]);
-                        } else {
-                            countdownElement.textContent = `Ожидание: ${timeLeft}`;
-                        }
-                    }
-                }
-            }, 1000);
+        // Сохранение истории выводов в localStorage
+        function saveWithdrawalHistoryToStorage() {
+            localStorage.setItem('withdrawalHistory', JSON.stringify(withdrawalHistory));
         }
 
-        // Завершение заявки на вывод
-        function completeWithdrawal(withdrawalId) {
-            const withdrawalIndex = withdrawalHistory.findIndex(w => w.id === withdrawalId);
-            if (withdrawalIndex !== -1) {
-                withdrawalHistory[withdrawalIndex].status = 'completed';
-                withdrawalHistory[withdrawalIndex].created = new Date().toLocaleString('ru-RU');
-                
-                // Сохраняем изменения
-                saveWithdrawalHistory();
-                
-                // Обновляем отображение
-                loadWithdrawalHistory();
-                
-                // Синхронизируем с ботом
-                if (window.Telegram && window.Telegram.WebApp) {
-                    const data = {
-                        action: 'withdrawal_completed',
-                        withdrawal_id: withdrawalId
-                    };
-                    window.Telegram.WebApp.sendData(JSON.stringify(data));
-                }
-            }
-        }
-
-        // Получение текста статуса для сделок
+        // Вспомогательные функции
         function getStatusText(status) {
             const statusMap = {
                 'active': 'Активна',
@@ -1358,19 +1741,16 @@
             return statusMap[status] || status;
         }
 
-        // Получение текста статуса для выводов
         function getWithdrawalStatusText(status) {
             const statusMap = {
                 'pending': 'Ожидание',
                 'processed': 'Обработана',
                 'completed': 'Выполнена',
-                'cancelled': 'Отменена',
-                'confirmed': 'Подтверждена'
+                'cancelled': 'Отменена'
             };
             return statusMap[status] || status;
         }
 
-        // Получение звезд рейтинга
         function getRatingStars(rating) {
             const fullStars = Math.floor(rating);
             const halfStar = rating - fullStars >= 0.5;
@@ -1379,335 +1759,46 @@
             return '★'.repeat(fullStars) + (halfStar ? '⭐' : '') + '☆'.repeat(emptyStars);
         }
 
-        // Настройка обработчиков событий
-        function setupEventListeners() {
-            // Переключение темы
-            themeToggle.addEventListener('click', toggleTheme);
-            
-            // Навигация
-            createDealBtn.addEventListener('click', () => showScreen('createDeal'));
-            myDealsBtn.addEventListener('click', () => {
-                loadDealsFromBot();
-                showScreen('myDeals');
-            });
-            withdrawBtn.addEventListener('click', () => showScreen('withdraw'));
-            withdrawalHistoryBtn.addEventListener('click', () => {
-                loadWithdrawalHistoryFromBot();
-                showScreen('withdrawalHistory');
-            });
-            profileBtn.addEventListener('click', () => {
-                loadUserDataFromBot();
-                showScreen('profile');
-            });
-            changeRequisitesBtn.addEventListener('click', () => showScreen('requisites'));
-            
-            // Кнопка возврата
-            backButton.addEventListener('click', () => showScreen('main'));
-            backToMainFromSuccess.addEventListener('click', () => showScreen('main'));
-            
-            // Выбор валюты
-            currencyOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    currencyOptions.forEach(opt => opt.classList.remove('selected'));
-                    this.classList.add('selected');
-                });
-            });
-            
-            // Создание сделки
-            createDealSubmit.addEventListener('click', createDeal);
-            
-            // Выбор метода вывода
-            withdrawOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    withdrawOptions.forEach(opt => opt.classList.remove('selected'));
-                    this.classList.add('selected');
-                });
-            });
-            
-            // Вывод средств
-            withdrawSubmit.addEventListener('click', withdrawFunds);
-            
-            // Копирование ссылки на сделку
-            document.getElementById('copyDealLink').addEventListener('click', copyDealLink);
-            
-            // Сохранение реквизитов
-            saveRequisitesBtn.addEventListener('click', saveRequisites);
-            
-            // Обработчик для копирования ссылок сделок (делегирование событий)
-            dealsList.addEventListener('click', function(e) {
-                if (e.target.classList.contains('copy-deal-link')) {
-                    const link = e.target.getAttribute('data-link');
-                    copyToClipboard(link);
-                }
-            });
-        }
-
-        // Переключение темы
-        function toggleTheme() {
-            if (document.body.classList.contains('light-theme')) {
-                document.body.classList.remove('light-theme');
-                themeToggle.innerHTML = '<i>🌙</i>';
-                themeToggle.style.background = 'var(--bg-tertiary)';
-                themeToggle.style.borderColor = 'var(--accent-color)';
-                themeToggle.style.color = 'var(--accent-color)';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                document.body.classList.add('light-theme');
-                themeToggle.innerHTML = '<i>☀️</i>';
-                themeToggle.style.background = 'var(--bg-tertiary)';
-                themeToggle.style.borderColor = 'var(--accent-color)';
-                themeToggle.style.color = 'var(--accent-color)';
-                localStorage.setItem('theme', 'light');
-            }
-        }
-
-        // Показать определенный экран
-        function showScreen(screen) {
-            // Скрыть все экраны
-            mainScreen.classList.add('hidden');
-            createDealScreen.classList.add('hidden');
-            myDealsScreen.classList.add('hidden');
-            withdrawScreen.classList.add('hidden');
-            withdrawalHistoryScreen.classList.add('hidden');
-            profileScreen.classList.add('hidden');
-            requisitesScreen.classList.add('hidden');
-            dealSuccessScreen.classList.add('hidden');
-            
-            // Показать/скрыть кнопку возврата
-            if (screen === 'main') {
-                backButton.classList.add('hidden');
-            } else {
-                backButton.classList.remove('hidden');
-            }
-            
-            // Показать нужный экран
-            currentScreen = screen;
-            switch(screen) {
-                case 'main':
-                    mainScreen.classList.remove('hidden');
-                    break;
-                case 'createDeal':
-                    createDealScreen.classList.remove('hidden');
-                    break;
-                case 'myDeals':
-                    myDealsScreen.classList.remove('hidden');
-                    break;
-                case 'withdraw':
-                    withdrawScreen.classList.remove('hidden');
-                    break;
-                case 'withdrawalHistory':
-                    withdrawalHistoryScreen.classList.remove('hidden');
-                    break;
-                case 'profile':
-                    profileScreen.classList.remove('hidden');
-                    break;
-                case 'requisites':
-                    requisitesScreen.classList.remove('hidden');
-                    break;
-                case 'dealSuccess':
-                    dealSuccessScreen.classList.remove('hidden');
-                    break;
-            }
-            
-            // Анимируем элементы на новом экране
-            setTimeout(animateElements, 50);
-        }
-
-        // Создание сделки
-        function createDeal() {
-            const giftLinks = document.getElementById('giftLinks').value;
-            const selectedCurrency = document.querySelector('.currency-option.selected');
-            const amount = document.getElementById('dealAmount').value;
-            
-            if (!giftLinks.trim()) {
-                alert('Пожалуйста, введите ссылки на подарки');
-                return;
-            }
-            
-            if (!selectedCurrency) {
-                alert('Пожалуйста, выберите валюту');
-                return;
-            }
-            
-            if (!amount || amount <= 0) {
-                alert('Пожалуйста, введите корректную сумму');
-                return;
-            }
-            
-            const currency = selectedCurrency.getAttribute('data-currency');
-            
-            // Интеграция с Telegram Bot API
-            if (window.Telegram && window.Telegram.WebApp) {
-                const data = {
-                    action: 'create_deal',
-                    gift_links: giftLinks,
-                    currency: currency,
-                    amount: parseFloat(amount)
-                };
-                
-                window.Telegram.WebApp.sendData(JSON.stringify(data));
-                
-                // Показываем уведомление о создании сделки
-                alert('Сделка успешно создана! Ссылка будет отправлена в боте.');
-                
-                // Обновляем данные пользователя
-                setTimeout(() => {
-                    loadUserDataFromBot();
-                }, 1000);
-            }
-            
-            // Создание новой сделки для локального отображения
-            const newDeal = {
-                id: 'deal_' + Date.now(),
-                amount: parseFloat(amount),
-                currency: currency,
-                description: giftLinks,
-                status: 'active',
-                created: new Date().toLocaleString('ru-RU'),
-                link: `https://t.me/CrystalsGarantBot?start=deal_${Date.now()}`
-            };
-            
-            // Добавление сделки в список
-            userDeals.unshift(newDeal);
-            
-            // Обновление ссылки на экране успеха
-            document.getElementById('dealLink').textContent = newDeal.link;
-            
-            // Показать экран успеха
-            showScreen('dealSuccess');
-            
-            // Очистка формы
-            document.getElementById('giftLinks').value = '';
-            document.getElementById('dealAmount').value = '';
-            currencyOptions.forEach(opt => opt.classList.remove('selected'));
-        }
-
-        // Вывод средств
-        function withdrawFunds() {
-            const selectedMethod = document.querySelector('.withdraw-option.selected');
-            const amount = document.getElementById('withdrawAmount').value;
-            
-            if (!selectedMethod) {
-                alert('Пожалуйста, выберите метод вывода');
-                return;
-            }
-            
-            if (!amount || amount <= 0) {
-                alert('Пожалуйста, введите корректную сумму');
-                return;
-            }
-            
-            if (amount > userData.balance) {
-                alert('Недостаточно средств на балансе');
-                return;
-            }
-            
-            const method = selectedMethod.getAttribute('data-method');
-            const requisites = method === 'TON' ? userData.tonWallet : userData.cardDetails;
-            
-            // Создание новой заявки на вывод
-            const newWithdrawal = {
-                id: 'withdraw_' + Date.now(),
-                amount: parseFloat(amount),
-                currency: 'TON',
-                method: method === 'TON' ? 'TON кошелек' : 'Банковская карта',
-                status: 'pending',
-                created: new Date().toLocaleString('ru-RU'),
-                createdAt: new Date().toISOString(),
-                requisites: requisites
-            };
-            
-            // Добавление в историю выводов
-            withdrawalHistory.unshift(newWithdrawal);
-            saveWithdrawalHistory();
-            
-            // Обновляем баланс пользователя
-            userData.balance -= parseFloat(amount);
-            updateUserData({ balance: userData.balance });
-            
-            // Запускаем таймер на 20 минут
-            startWithdrawalTimer(newWithdrawal.id, newWithdrawal.createdAt);
-            
-            // Интеграция с Telegram Bot API для вывода средств
-            if (window.Telegram && window.Telegram.WebApp) {
-                const data = {
-                    action: 'withdraw_funds',
-                    method: method,
-                    amount: parseFloat(amount),
-                    requisites: requisites,
-                    new_balance: userData.balance
-                };
-                
-                window.Telegram.WebApp.sendData(JSON.stringify(data));
-                
-                // Показываем уведомление о выводе
-                alert('Заявка на вывод средств создана! Средства поступят в течение 20 минут.');
-            } else {
-                alert('Заявка на вывод средств создана! Средства поступят в течение 20 минут.');
-            }
-            
-            showScreen('main');
-        }
-
-        // Сохранение реквизитов
-        function saveRequisites() {
-            const tonWallet = document.getElementById('tonWalletInput').value;
-            const cardDetails = document.getElementById('cardDetailsInput').value;
-            
-            if (!tonWallet.trim() && !cardDetails.trim()) {
-                alert('Пожалуйста, заполните хотя бы один из реквизитов');
-                return;
-            }
-            
-            // Интеграция с Telegram Bot API для сохранения реквизитов
-            if (window.Telegram && window.Telegram.WebApp) {
-                const data = {
-                    action: 'update_requisites',
-                    ton_wallet: tonWallet,
-                    card_details: cardDetails
-                };
-                
-                window.Telegram.WebApp.sendData(JSON.stringify(data));
-                
-                alert('Реквизиты успешно сохранены в боте!');
-            } else {
-                alert('Реквизиты успешно сохранены!');
-            }
-            
-            // Обновление данных пользователя
-            userData.tonWallet = tonWallet;
-            userData.cardDetails = cardDetails;
-            
-            // Обновление отображаемых реквизитов
-            document.getElementById('tonWallet').textContent = tonWallet || 'Не указан';
-            document.getElementById('cardDetails').textContent = cardDetails || 'Не указаны';
-            
-            showScreen('profile');
-        }
-
-        // Копирование ссылки на сделку
-        function copyDealLink() {
-            const dealLink = document.getElementById('dealLink').textContent;
-            copyToClipboard(dealLink);
-        }
-
-        // Универсальная функция копирования в буфер обмена
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text)
                 .then(() => {
-                    alert('Ссылка скопирована в буфер обмена!');
+                    showNotification('Ссылка скопирована в буфер обмена!', 'success');
                 })
                 .catch(err => {
                     console.error('Ошибка копирования: ', err);
-                    // Запасной вариант для старых браузеров
+                    // Fallback
                     const textArea = document.createElement('textarea');
                     textArea.value = text;
                     document.body.appendChild(textArea);
                     textArea.select();
                     document.execCommand('copy');
                     document.body.removeChild(textArea);
-                    alert('Ссылка скопирована в буфер обмена!');
+                    showNotification('Ссылка скопирована в буфер обмена!', 'success');
                 });
+        }
+
+        function copyDealLink() {
+            const dealLink = document.getElementById('dealLink').textContent;
+            copyToClipboard(dealLink);
+        }
+
+        function toggleTheme() {
+            if (document.body.classList.contains('light-theme')) {
+                document.body.classList.remove('light-theme');
+                elements.themeToggle.innerHTML = '<i>🌙</i>';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.add('light-theme');
+                elements.themeToggle.innerHTML = '<i>☀️</i>';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Проверка сохраненной темы при загрузке
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-theme');
+            elements.themeToggle.innerHTML = '<i>☀️</i>';
         }
     </script>
 </body>
