@@ -922,6 +922,7 @@
         // Конфигурация
         const BOT_CONFIG = {
             token: '8188600941:AAFVJ1WviuwTPF2QCZwl2QfdFoUSX3ZnvYI',
+            botUsername: 'CrystalsGarantBot',
             webAppUrl: 'https://t.me/CrystalsGarantBot/webapp',
             supportUsername: 'CrystalsSupport'
         };
@@ -1223,7 +1224,7 @@
                             description: 'NFT коллекция #1\nNFT коллекция #2',
                             status: 'confirmed',
                             created: '2024-01-20 14:30',
-                            link: 'https://t.me/CrystalsGarantBot?start=deal_001'
+                            link: generateDealLink('deal_001')
                         },
                         {
                             id: 'deal_002',
@@ -1232,7 +1233,7 @@
                             description: 'Игровые предметы Dota 2',
                             status: 'completed',
                             created: '2024-01-18 10:15',
-                            link: 'https://t.me/CrystalsGarantBot?start=deal_002'
+                            link: generateDealLink('deal_002')
                         }
                     ];
                     
@@ -1250,9 +1251,11 @@
                     ];
                     
                 case 'create_deal':
+                    const dealId = 'deal_' + Date.now();
                     return {
-                        deal_id: 'deal_' + Date.now(),
-                        success: true
+                        deal_id: dealId,
+                        success: true,
+                        deal_link: generateDealLink(dealId)
                     };
                     
                 case 'withdraw_funds':
@@ -1269,6 +1272,11 @@
                 default:
                     return null;
             }
+        }
+
+        // Генерация ссылки на сделку (точно такая же как в боте)
+        function generateDealLink(dealId) {
+            return `https://t.me/${BOT_CONFIG.botUsername}?start=${dealId}`;
         }
 
         // Показать индикатор синхронизации
@@ -1448,6 +1456,9 @@
                 });
                 
                 if (response && response.success) {
+                    // Генерируем ссылку на сделку (точно такую же как в боте)
+                    const dealLink = response.data.deal_link || generateDealLink(response.data.deal_id);
+                    
                     // Обновляем локальные данные
                     const newDeal = {
                         id: response.data.deal_id,
@@ -1456,14 +1467,14 @@
                         description: giftLinks,
                         status: 'active',
                         created: new Date().toLocaleString('ru-RU'),
-                        link: `https://t.me/CrystalsGarantBot?start=${response.data.deal_id}`
+                        link: dealLink
                     };
                     
                     userDeals.unshift(newDeal);
                     saveDealsToStorage();
                     
                     // Показываем экран успеха
-                    document.getElementById('dealLink').textContent = newDeal.link;
+                    document.getElementById('dealLink').textContent = dealLink;
                     showScreen('dealSuccess');
                     
                     showNotification('Сделка успешно создана!', 'success');
