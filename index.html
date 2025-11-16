@@ -120,6 +120,14 @@
             margin-bottom: 16px;
             box-shadow: var(--shadow);
             border: 1px solid var(--border-color);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .card.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .button {
@@ -138,6 +146,13 @@
             cursor: pointer;
             margin-bottom: 12px;
             transition: all 0.2s;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .button.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .button:hover {
@@ -475,6 +490,11 @@
             color: #2196F3;
         }
 
+        .status-confirmed {
+            background-color: rgba(105, 240, 174, 0.2);
+            color: #4CAF50;
+        }
+
         .deal-details, .withdrawal-details {
             margin-bottom: 12px;
         }
@@ -549,9 +569,111 @@
             margin-top: 4px;
             font-weight: 600;
         }
+
+        /* Стили для мини-бара загрузки */
+        .loading-bar-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 300px;
+            z-index: 9999;
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .loading-bar {
+            width: 100%;
+            height: 6px;
+            background-color: var(--bg-tertiary);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color), var(--accent-secondary));
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9998;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .loading-text {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .loading-percentage {
+            font-size: 14px;
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        /* Анимации для плавного появления элементов */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
     </style>
 </head>
 <body>
+    <!-- Экран загрузки -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-bar-container">
+            <div class="loading-logo">🛡</div>
+            <div class="loading-text">Crystal Trust - Safe & Automatic</div>
+            <div class="loading-text">Загрузка...</div>
+            <div class="loading-bar">
+                <div class="loading-progress" id="loadingProgress"></div>
+            </div>
+            <div class="loading-percentage" id="loadingPercentage">0%</div>
+        </div>
+    </div>
+
     <div class="container">
         <!-- Шапка с логотипом и переключателем темы -->
         <div class="header">
@@ -570,7 +692,7 @@
 
         <!-- Главный экран -->
         <div id="mainScreen">
-            <div class="card">
+            <div class="card" id="mainCard">
                 <div class="button" id="createDealBtn">
                     <i>💎</i> Создать сделку
                 </div>
@@ -803,6 +925,9 @@
         const dealSuccessScreen = document.getElementById('dealSuccessScreen');
         const dealsList = document.getElementById('dealsList');
         const withdrawalsList = document.getElementById('withdrawalsList');
+        const loadingProgress = document.getElementById('loadingProgress');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const loadingPercentage = document.getElementById('loadingPercentage');
 
         // Кнопки навигации
         const createDealBtn = document.getElementById('createDealBtn');
@@ -833,6 +958,41 @@
 
         // Инициализация приложения
         document.addEventListener('DOMContentLoaded', function() {
+            // Запускаем процесс загрузки
+            startLoading();
+        });
+
+        // Процесс загрузки приложения
+        function startLoading() {
+            let progress = 0;
+            const loadingInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(loadingInterval);
+                    
+                    // Завершаем загрузку
+                    setTimeout(finishLoading, 500);
+                }
+                loadingProgress.style.width = progress + '%';
+                loadingPercentage.textContent = Math.round(progress) + '%';
+            }, 200);
+        }
+
+        // Завершение загрузки
+        function finishLoading() {
+            // Скрываем экран загрузки
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+                
+                // Инициализируем приложение
+                initializeApp();
+            }, 500);
+        }
+
+        // Инициализация приложения после загрузки
+        function initializeApp() {
             // Проверяем, первый ли это запуск
             const isFirstRun = localStorage.getItem('firstRun') === null;
             if (isFirstRun) {
@@ -866,7 +1026,27 @@
                 document.body.classList.add('light-theme');
                 themeToggle.innerHTML = '<i>☀️</i>';
             }
-        });
+            
+            // Показываем элементы с анимацией
+            animateElements();
+        }
+
+        // Анимация появления элементов
+        function animateElements() {
+            // Анимируем карточки
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.classList.add('visible');
+            });
+            
+            // Анимируем кнопки с задержкой
+            const buttons = document.querySelectorAll('.button');
+            buttons.forEach((button, index) => {
+                setTimeout(() => {
+                    button.classList.add('visible');
+                }, 100 * index);
+            });
+        }
 
         // Сохранение истории выводов в localStorage
         function saveWithdrawalHistory() {
@@ -940,7 +1120,7 @@
                             amount: 150.50,
                             currency: 'TON',
                             description: 'NFT коллекция #1\nNFT коллекция #2',
-                            status: 'active',
+                            status: 'confirmed',
                             created: '2024-01-20 14:30',
                             link: 'https://t.me/CrystalsGarantBot?start=deal_001'
                         },
@@ -952,6 +1132,15 @@
                             status: 'completed',
                             created: '2024-01-18 10:15',
                             link: 'https://t.me/CrystalsGarantBot?start=deal_002'
+                        },
+                        {
+                            id: 'deal_003',
+                            amount: 200.00,
+                            currency: 'USD',
+                            description: 'Стимерский набор',
+                            status: 'active',
+                            created: '2024-01-22 16:45',
+                            link: 'https://t.me/CrystalsGarantBot?start=deal_003'
                         }
                     ];
                     loadDealsList();
@@ -1152,7 +1341,9 @@
             const statusMap = {
                 'active': 'Активна',
                 'completed': 'Завершена',
-                'cancelled': 'Отменена'
+                'cancelled': 'Отменена',
+                'confirmed': 'Подтверждена',
+                'pending': 'Ожидание'
             };
             return statusMap[status] || status;
         }
@@ -1163,7 +1354,8 @@
                 'pending': 'Ожидание',
                 'processed': 'Обработана',
                 'completed': 'Выполнена',
-                'cancelled': 'Отменена'
+                'cancelled': 'Отменена',
+                'confirmed': 'Подтверждена'
             };
             return statusMap[status] || status;
         }
@@ -1306,6 +1498,9 @@
                     dealSuccessScreen.classList.remove('hidden');
                     break;
             }
+            
+            // Анимируем элементы на новом экране
+            setTimeout(animateElements, 50);
         }
 
         // Создание сделки
