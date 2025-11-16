@@ -3,146 +3,1507 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Garant Bot</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Crystal Trust - Safe & Automatic</title>
     <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent-color: #bb86fc;
+            --accent-secondary: #03dac6;
+            --border-color: #333333;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .light-theme {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --bg-tertiary: #e0e0e0;
+            --text-primary: #121212;
+            --text-secondary: #5a5a5a;
+            --accent-color: #6200ee;
+            --accent-secondary: #018786;
+            --border-color: #dddddd;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
         }
-        
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
+            padding: 16px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .header {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+            border-radius: 12px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-        
-        .logo {
-            font-size: 2.5rem;
-            margin-bottom: 30px;
+            font-weight: bold;
+            font-size: 18px;
             color: white;
         }
-        
-        .button-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-        }
-        
-        .main-button {
-            background: white;
-            border: none;
-            border-radius: 15px;
-            padding: 20px;
+
+        .logo-text {
             font-size: 18px;
-            font-weight: 600;
-            color: #333;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .theme-toggle {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
             cursor: pointer;
+            font-size: 20px;
+            padding: 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            right: 16px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(187, 134, 252, 0.3);
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(187, 134, 252, 0.5);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .card {
+            background-color: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .button {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            width: 100%;
+            padding: 16px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: all 0.2s;
         }
-        
-        .main-button:hover {
+
+        .button:hover {
+            opacity: 0.9;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
-        
-        .main-button:active {
-            transform: translateY(0);
+
+        .button-secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
         }
-        
-        .button-create {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
+
+        .button-secondary:hover {
+            background-color: var(--border-color);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .back-button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            left: 16px;
+        }
+
+        .back-button:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        .deal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-input, .form-textarea {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .currency-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .currency-option {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            background-color: var(--bg-tertiary);
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .currency-option.selected {
+            border-color: var(--accent-color);
+            background-color: rgba(187, 134, 252, 0.1);
+        }
+
+        .withdraw-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .withdraw-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .withdraw-option:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        .withdraw-option.selected {
+            border-color: var(--accent-color);
+            background-color: rgba(187, 134, 252, 0.1);
+        }
+
+        .withdraw-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
+            font-size: 20px;
+            transform: none !important;
         }
-        
-        .button-profile {
-            background: linear-gradient(135deg, #2196F3, #1976D2);
+
+        .success-message {
+            background-color: rgba(3, 218, 198, 0.1);
+            border: 1px solid var(--accent-secondary);
+            color: var(--accent-secondary);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .deal-link {
+            background-color: var(--bg-tertiary);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 16px 0;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 14px;
+            overflow-wrap: break-word;
+        }
+
+        .copy-button {
+            background-color: var(--accent-color);
             color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 8px;
         }
-        
-        .button-withdraw {
-            background: linear-gradient(135deg, #FF9800, #F57C00);
+
+        .requisites-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .wallet-address {
+            background-color: var(--bg-tertiary);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 14px;
+            overflow-wrap: break-word;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Стили для профиля */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
             color: white;
+            font-weight: bold;
         }
-        
-        .button-icon {
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-username {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .profile-userid {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+        .rating-stars {
+            color: gold;
+            font-size: 18px;
+        }
+
+        .rating-value {
+            font-weight: 600;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background-color: var(--bg-tertiary);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
             font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--text-secondary);
+        }
+
+        .info-value {
+            font-weight: 600;
+        }
+
+        /* Стили для списка сделок */
+        .deals-list, .withdrawals-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .deal-item, .withdrawal-item {
+            background-color: var(--bg-tertiary);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .deal-header, .withdrawal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .deal-id, .withdrawal-id {
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .deal-status, .withdrawal-status {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background-color: rgba(3, 218, 198, 0.2);
+            color: var(--accent-secondary);
+        }
+
+        .status-completed {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .status-cancelled {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: #F44336;
+        }
+
+        .status-pending {
+            background-color: rgba(255, 152, 0, 0.2);
+            color: #FF9800;
+        }
+
+        .status-processed {
+            background-color: rgba(33, 150, 243, 0.2);
+            color: #2196F3;
+        }
+
+        .deal-details, .withdrawal-details {
+            margin-bottom: 12px;
+        }
+
+        .deal-amount, .withdrawal-amount {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .deal-description, .withdrawal-method {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 8px;
+            word-break: break-word;
+        }
+
+        .deal-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0 auto;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            position: relative;
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .withdrawal-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .countdown-timer {
+            font-size: 11px;
+            color: var(--accent-color);
+            margin-top: 4px;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">🛡️</div>
-        <div class="button-grid">
-            <button class="main-button button-create" onclick="createDeal()">
-                <span class="button-icon">🎁</span>
-                Создать сделку
-            </button>
-            
-            <button class="main-button button-profile" onclick="showProfile()">
-                <span class="button-icon">👤</span>
-                Мой профиль
-            </button>
-            
-            <button class="main-button button-withdraw" onclick="withdrawFunds()">
-                <span class="button-icon">💸</span>
-                Вывести средства
+        <!-- Шапка с логотипом и переключателем темы -->
+        <div class="header">
+            <div class="header-content">
+                <button class="back-button hidden" id="backButton">
+                    <i>←</i>
+                </button>
+                <div class="logo">
+                    <div class="logo-text">🛡 Crystal Trust - Safe & Automatic</div>
+                </div>
+                <button class="theme-toggle" id="themeToggle">
+                    <i>🌙</i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Главный экран -->
+        <div id="mainScreen">
+            <div class="card">
+                <div class="button" id="createDealBtn">
+                    <i>💎</i> Создать сделку
+                </div>
+                <div class="button button-secondary" id="myDealsBtn">
+                    <i>📋</i> Мои сделки
+                </div>
+                <div class="button button-secondary" id="withdrawBtn">
+                    <i>💸</i> Вывести средства
+                </div>
+                <div class="button button-secondary" id="withdrawalHistoryBtn">
+                    <i>📊</i> История выводов
+                </div>
+                <div class="button button-secondary" id="profileBtn">
+                    <i>👤</i> Профиль
+                </div>
+            </div>
+        </div>
+
+        <!-- Экран создания сделки -->
+        <div id="createDealScreen" class="hidden">
+            <div class="card">
+                <div class="deal-form">
+                    <div class="form-group">
+                        <label class="form-label">Ссылки на подарки</label>
+                        <textarea class="form-textarea" id="giftLinks" placeholder="Введите ссылки на подарки, каждую с новой строки..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Валюта</label>
+                        <div class="currency-selector" id="currencySelector">
+                            <div class="currency-option" data-currency="TON">TON</div>
+                            <div class="currency-option" data-currency="RUB">RUB</div>
+                            <div class="currency-option" data-currency="EUR">EUR</div>
+                            <div class="currency-option" data-currency="USD">USD</div>
+                            <div class="currency-option" data-currency="UZS">UZS</div>
+                            <div class="currency-option" data-currency="KZT">KZT</div>
+                            <div class="currency-option" data-currency="KGS">KGS</div>
+                            <div class="currency-option" data-currency="IDR">IDR</div>
+                            <div class="currency-option" data-currency="UAH">UAH</div>
+                            <div class="currency-option" data-currency="BYN">BYN</div>
+                            <div class="currency-option" data-currency="STARS">Stars</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Сумма</label>
+                        <input type="number" class="form-input" id="dealAmount" placeholder="Введите сумму">
+                    </div>
+                    
+                    <button class="button" id="createDealSubmit">
+                        <i>✅</i> Создать сделку
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Экран моих сделок -->
+        <div id="myDealsScreen" class="hidden">
+            <div class="card">
+                <div class="section-title">Мои сделки</div>
+                <div class="deals-list" id="dealsList">
+                    <!-- Сделки будут добавляться динамически -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Экран вывода средств -->
+        <div id="withdrawScreen" class="hidden">
+            <div class="card">
+                <div class="withdraw-options">
+                    <div class="withdraw-option selected" data-method="TON">
+                        <div class="withdraw-icon">💎</div>
+                        <div>
+                            <div class="info-value">TON кошелек</div>
+                            <div class="wallet-address" id="tonWallet">UQAPAz_HELXWFbD1ZYKUxgRc_h5wPwIUD3wlZslOy5xzpyTg</div>
+                        </div>
+                    </div>
+                    <div class="withdraw-option" data-method="CARD">
+                        <div class="withdraw-icon">💳</div>
+                        <div>
+                            <div class="info-value">Банковская карта</div>
+                            <div class="wallet-address" id="cardDetails">+79290556299 - Сбп</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="deal-form">
+                    <div class="form-group">
+                        <input type="number" class="form-input" id="withdrawAmount" placeholder="Введите сумму для вывода">
+                    </div>
+                    
+                    <button class="button" id="withdrawSubmit">
+                        <i>📤</i> Вывести средства
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Экран истории выводов -->
+        <div id="withdrawalHistoryScreen" class="hidden">
+            <div class="card">
+                <div class="section-title">Заявки на вывод</div>
+                <div class="withdrawals-list" id="withdrawalsList">
+                    <!-- Заявки на вывод будут добавляться динамически -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Экран профиля -->
+        <div id="profileScreen" class="hidden">
+            <div class="card">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar">U</div>
+                    <div class="profile-info">
+                        <div class="profile-username" id="profileUsername">@username</div>
+                        <div class="profile-userid" id="profileUserId">ID: 6521371413</div>
+                        <div class="rating">
+                            <div class="rating-stars" id="profileRatingStars">★★★★★</div>
+                            <div class="rating-value" id="profileRatingValue">5.0/5</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="profileBalance">1250.5</div>
+                        <div class="stat-label">Баланс</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="profileDeals">12</div>
+                        <div class="stat-label">Успешных сделок</div>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Дата регистрации:</span>
+                    <span class="info-value" id="profileRegDate">15.01.2024</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="button button-secondary" id="changeRequisitesBtn">
+                    <i>⚙️</i> Настройка реквизитов
+                </div>
+            </div>
+        </div>
+
+        <!-- Экран изменения реквизитов -->
+        <div id="requisitesScreen" class="hidden">
+            <div class="card">
+                <div class="requisites-form">
+                    <div class="form-group">
+                        <label class="form-label">TON кошелек</label>
+                        <input type="text" class="form-input" id="tonWalletInput" placeholder="Введите адрес TON кошелька" value="UQAPAz_HELXWFbD1ZYKUxgRc_h5wPwIUD3wlZslOy5xzpyTg">
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                            Пример: UQAPAz_HELXWFbD1ZYKUxgRc_h5wPwIUD3wlZslOy5xzpyTg
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Банковская карта</label>
+                        <input type="text" class="form-input" id="cardDetailsInput" placeholder="Введите реквизиты карты" value="+79290556299 - Сбп">
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                            Пример: +79290556299 - Сбп
+                        </div>
+                    </div>
+                    
+                    <button class="button" id="saveRequisites">
+                        <i>💾</i> Сохранить реквизиты
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Экран успешного создания сделки -->
+        <div id="dealSuccessScreen" class="hidden">
+            <div class="success-message">
+                <i>✅</i> Ваша сделка успешно создана!
+            </div>
+
+            <div class="card">
+                <div class="deal-link" id="dealLink">
+                    https://t.me/CrystalsGarantBot?start=deal_123456789
+                </div>
+                <button class="copy-button" id="copyDealLink">
+                    Копировать ссылку
+                </button>
+            </div>
+
+            <button class="button" id="backToMainFromSuccess">
+                <i>🏠</i> Вернуться на главную
             </button>
         </div>
     </div>
 
     <script>
-        // Инициализация Telegram WebApp
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.enableClosingConfirmation();
+        // Данные пользователя (синхронизируются с ботом)
+        let userData = {
+            id: 6521371413,
+            username: '@username',
+            rating: 4.8,
+            balance: 1250.50,
+            successfulDeals: 12,
+            registrationDate: '15.01.2024',
+            tonWallet: 'UQAPAz_HELXWFbD1ZYKUxgRc_h5wPwIUD3wlZslOy5xzpyTg',
+            cardDetails: '+79290556299 - Сбп'
+        };
+
+        // Данные сделок
+        let userDeals = [];
+
+        // Данные истории выводов (пустая при первом запуске)
+        let withdrawalHistory = [];
+
+        // Таймеры для автоматического обновления статусов
+        let withdrawalTimers = {};
+
+        // Элементы DOM
+        const themeToggle = document.getElementById('themeToggle');
+        const backButton = document.getElementById('backButton');
+        const mainScreen = document.getElementById('mainScreen');
+        const createDealScreen = document.getElementById('createDealScreen');
+        const myDealsScreen = document.getElementById('myDealsScreen');
+        const withdrawScreen = document.getElementById('withdrawScreen');
+        const withdrawalHistoryScreen = document.getElementById('withdrawalHistoryScreen');
+        const profileScreen = document.getElementById('profileScreen');
+        const requisitesScreen = document.getElementById('requisitesScreen');
+        const dealSuccessScreen = document.getElementById('dealSuccessScreen');
+        const dealsList = document.getElementById('dealsList');
+        const withdrawalsList = document.getElementById('withdrawalsList');
+
+        // Кнопки навигации
+        const createDealBtn = document.getElementById('createDealBtn');
+        const myDealsBtn = document.getElementById('myDealsBtn');
+        const withdrawBtn = document.getElementById('withdrawBtn');
+        const withdrawalHistoryBtn = document.getElementById('withdrawalHistoryBtn');
+        const profileBtn = document.getElementById('profileBtn');
+        const changeRequisitesBtn = document.getElementById('changeRequisitesBtn');
         
-        // Получаем данные пользователя
-        let user = tg.initDataUnsafe.user;
-        
-        function createDeal() {
-            // Отправляем команду создания сделки в бота
-            tg.sendData(JSON.stringify({
-                action: 'create_deal'
-            }));
-        }
-        
-        function showProfile() {
-            // Отправляем команду показа профиля в бота
-            tg.sendData(JSON.stringify({
-                action: 'show_profile'
-            }));
-        }
-        
-        function withdrawFunds() {
-            // Отправляем команду вывода средств в бота
-            tg.sendData(JSON.stringify({
-                action: 'withdraw_funds'
-            }));
-        }
-        
-        // Обработка данных от бота
-        tg.onEvent('viewportChanged', (event) => {
-            console.log('Viewport changed:', event);
+        // Кнопки возврата
+        const backToMainFromSuccess = document.getElementById('backToMainFromSuccess');
+
+        // Элементы формы создания сделки
+        const currencyOptions = document.querySelectorAll('.currency-option');
+        const createDealSubmit = document.getElementById('createDealSubmit');
+
+        // Элементы вывода средств
+        const withdrawOptions = document.querySelectorAll('.withdraw-option');
+        const withdrawSubmit = document.getElementById('withdrawSubmit');
+
+        // Элементы изменения реквизитов
+        const saveRequisitesBtn = document.getElementById('saveRequisites');
+        const tonWalletInput = document.getElementById('tonWalletInput');
+        const cardDetailsInput = document.getElementById('cardDetailsInput');
+
+        // Текущий экран
+        let currentScreen = 'main';
+
+        // Инициализация приложения
+        document.addEventListener('DOMContentLoaded', function() {
+            // Проверяем, первый ли это запуск
+            const isFirstRun = localStorage.getItem('firstRun') === null;
+            if (isFirstRun) {
+                // Первый запуск - очищаем историю выводов
+                withdrawalHistory = [];
+                localStorage.setItem('firstRun', 'false');
+            } else {
+                // Не первый запуск - загружаем историю из localStorage
+                const savedHistory = localStorage.getItem('withdrawalHistory');
+                if (savedHistory) {
+                    withdrawalHistory = JSON.parse(savedHistory);
+                    
+                    // Восстанавливаем таймеры для ожидающих заявок
+                    withdrawalHistory.forEach(withdrawal => {
+                        if (withdrawal.status === 'pending' && withdrawal.createdAt) {
+                            startWithdrawalTimer(withdrawal.id, withdrawal.createdAt);
+                        }
+                    });
+                }
+            }
+            
+            // Загрузка данных из бота
+            loadUserDataFromBot();
+            
+            // Установка обработчиков событий
+            setupEventListeners();
+            
+            // Проверка сохраненной темы
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+                themeToggle.innerHTML = '<i>☀️</i>';
+            }
         });
+
+        // Сохранение истории выводов в localStorage
+        function saveWithdrawalHistory() {
+            localStorage.setItem('withdrawalHistory', JSON.stringify(withdrawalHistory));
+        }
+
+        // Загрузка данных пользователя из бота
+        function loadUserDataFromBot() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                // Отправляем запрос на получение данных пользователя
+                const data = {
+                    action: 'get_user_data'
+                };
+                
+                window.Telegram.WebApp.sendData(JSON.stringify(data));
+                
+                // В реальном приложении здесь будет обработка ответа от бота
+                setTimeout(() => {
+                    updateUserData({
+                        balance: 1250.50,
+                        successfulDeals: 12,
+                        rating: 4.8
+                    });
+                }, 500);
+            } else {
+                // Для тестирования вне Telegram
+                updateUserData(userData);
+            }
+        }
+
+        // Обновление данных пользователя
+        function updateUserData(newData) {
+            userData = { ...userData, ...newData };
+            loadUserData();
+        }
+
+        // Загрузка данных пользователя в интерфейс
+        function loadUserData() {
+            // Заполнение профиля
+            document.getElementById('profileAvatar').textContent = userData.username.charAt(1).toUpperCase();
+            document.getElementById('profileUsername').textContent = userData.username;
+            document.getElementById('profileUserId').textContent = `ID: ${userData.id}`;
+            document.getElementById('profileRatingStars').textContent = getRatingStars(userData.rating);
+            document.getElementById('profileRatingValue').textContent = `${userData.rating}/5`;
+            document.getElementById('profileBalance').textContent = userData.balance.toFixed(2);
+            document.getElementById('profileDeals').textContent = userData.successfulDeals;
+            document.getElementById('profileRegDate').textContent = userData.registrationDate;
+
+            // Заполнение реквизитов для вывода
+            document.getElementById('tonWallet').textContent = userData.tonWallet;
+            document.getElementById('cardDetails').textContent = userData.cardDetails;
+
+            // Заполнение полей ввода реквизитов
+            tonWalletInput.value = userData.tonWallet;
+            cardDetailsInput.value = userData.cardDetails;
+        }
+
+        // Загрузка списка сделок из бота
+        function loadDealsFromBot() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                const data = {
+                    action: 'get_user_deals'
+                };
+                
+                window.Telegram.WebApp.sendData(JSON.stringify(data));
+                
+                setTimeout(() => {
+                    userDeals = [
+                        {
+                            id: 'deal_001',
+                            amount: 150.50,
+                            currency: 'TON',
+                            description: 'NFT коллекция #1\nNFT коллекция #2',
+                            status: 'active',
+                            created: '2024-01-20 14:30',
+                            link: 'https://t.me/CrystalsGarantBot?start=deal_001'
+                        },
+                        {
+                            id: 'deal_002',
+                            amount: 75.00,
+                            currency: 'RUB',
+                            description: 'Игровые предметы Dota 2',
+                            status: 'completed',
+                            created: '2024-01-18 10:15',
+                            link: 'https://t.me/CrystalsGarantBot?start=deal_002'
+                        }
+                    ];
+                    loadDealsList();
+                }, 500);
+            } else {
+                loadDealsList();
+            }
+        }
+
+        // Загрузка истории выводов из бота
+        function loadWithdrawalHistoryFromBot() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                const data = {
+                    action: 'get_withdrawal_history'
+                };
+                
+                window.Telegram.WebApp.sendData(JSON.stringify(data));
+                
+                setTimeout(() => {
+                    loadWithdrawalHistory();
+                }, 500);
+            } else {
+                loadWithdrawalHistory();
+            }
+        }
+
+        // Загрузка списка сделок
+        function loadDealsList() {
+            dealsList.innerHTML = '';
+            
+            if (userDeals.length === 0) {
+                dealsList.innerHTML = `
+                    <div class="empty-state">
+                        <i>📋</i>
+                        <div>У вас пока нет сделок</div>
+                        <div style="font-size: 14px; margin-top: 8px;">Создайте первую сделку</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            userDeals.forEach(deal => {
+                const dealElement = createDealElement(deal);
+                dealsList.appendChild(dealElement);
+            });
+        }
+
+        // Загрузка истории выводов
+        function loadWithdrawalHistory() {
+            withdrawalsList.innerHTML = '';
+            
+            if (withdrawalHistory.length === 0) {
+                withdrawalsList.innerHTML = `
+                    <div class="empty-state">
+                        <i>💸</i>
+                        <div>У вас пока нет заявок на вывод</div>
+                        <div style="font-size: 14px; margin-top: 8px;">Создайте первую заявку на вывод средств</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            withdrawalHistory.forEach(withdrawal => {
+                const withdrawalElement = createWithdrawalElement(withdrawal);
+                withdrawalsList.appendChild(withdrawalElement);
+            });
+        }
+
+        // Создание элемента сделки
+        function createDealElement(deal) {
+            const dealElement = document.createElement('div');
+            dealElement.className = 'deal-item';
+            
+            const statusClass = `status-${deal.status}`;
+            const statusText = getStatusText(deal.status);
+            
+            dealElement.innerHTML = `
+                <div class="deal-header">
+                    <div class="deal-id">${deal.id}</div>
+                    <div class="deal-status ${statusClass}">${statusText}</div>
+                </div>
+                <div class="deal-details">
+                    <div class="deal-amount">${deal.amount} ${deal.currency}</div>
+                    <div class="deal-description">${deal.description}</div>
+                    <div class="info-label">Создана: ${deal.created}</div>
+                </div>
+                <div class="deal-actions">
+                    <button class="copy-button copy-deal-link" data-link="${deal.link}">
+                        Копировать ссылку
+                    </button>
+                </div>
+            `;
+            
+            return dealElement;
+        }
+
+        // Создание элемента заявки на вывод
+        function createWithdrawalElement(withdrawal) {
+            const withdrawalElement = document.createElement('div');
+            withdrawalElement.className = 'withdrawal-item';
+            withdrawalElement.id = `withdrawal-${withdrawal.id}`;
+            
+            const statusClass = `status-${withdrawal.status}`;
+            const statusText = getWithdrawalStatusText(withdrawal.status);
+            
+            let countdownHtml = '';
+            if (withdrawal.status === 'pending' && withdrawal.createdAt) {
+                const timeLeft = calculateTimeLeft(withdrawal.createdAt);
+                countdownHtml = `<div class="countdown-timer">Ожидание: ${timeLeft}</div>`;
+            }
+            
+            withdrawalElement.innerHTML = `
+                <div class="withdrawal-header">
+                    <div class="withdrawal-id">${withdrawal.id}</div>
+                    <div class="withdrawal-status ${statusClass}">${statusText}</div>
+                </div>
+                <div class="withdrawal-details">
+                    <div class="withdrawal-amount">${withdrawal.amount} ${withdrawal.currency}</div>
+                    <div class="withdrawal-method">${withdrawal.method}</div>
+                    <div class="wallet-address">${withdrawal.requisites}</div>
+                    <div class="withdrawal-date">${withdrawal.created}</div>
+                    ${countdownHtml}
+                </div>
+            `;
+            
+            return withdrawalElement;
+        }
+
+        // Расчет оставшегося времени
+        function calculateTimeLeft(createdAt) {
+            const createdTime = new Date(createdAt).getTime();
+            const currentTime = new Date().getTime();
+            const elapsedTime = currentTime - createdTime;
+            const remainingTime = 20 * 60 * 1000 - elapsedTime; // 20 минут в миллисекундах
+            
+            if (remainingTime <= 0) {
+                return '00:00';
+            }
+            
+            const minutes = Math.floor(remainingTime / (60 * 1000));
+            const seconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
+            
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Запуск таймера для заявки на вывод
+        function startWithdrawalTimer(withdrawalId, createdAt) {
+            // Очищаем предыдущий таймер, если он есть
+            if (withdrawalTimers[withdrawalId]) {
+                clearInterval(withdrawalTimers[withdrawalId]);
+            }
+            
+            withdrawalTimers[withdrawalId] = setInterval(() => {
+                const withdrawalElement = document.getElementById(`withdrawal-${withdrawalId}`);
+                if (withdrawalElement) {
+                    const timeLeft = calculateTimeLeft(createdAt);
+                    const countdownElement = withdrawalElement.querySelector('.countdown-timer');
+                    
+                    if (countdownElement) {
+                        if (timeLeft === '00:00') {
+                            // Время вышло - меняем статус на "Выполнен"
+                            completeWithdrawal(withdrawalId);
+                            clearInterval(withdrawalTimers[withdrawalId]);
+                        } else {
+                            countdownElement.textContent = `Ожидание: ${timeLeft}`;
+                        }
+                    }
+                }
+            }, 1000);
+        }
+
+        // Завершение заявки на вывод
+        function completeWithdrawal(withdrawalId) {
+            const withdrawalIndex = withdrawalHistory.findIndex(w => w.id === withdrawalId);
+            if (withdrawalIndex !== -1) {
+                withdrawalHistory[withdrawalIndex].status = 'completed';
+                withdrawalHistory[withdrawalIndex].created = new Date().toLocaleString('ru-RU');
+                
+                // Сохраняем изменения
+                saveWithdrawalHistory();
+                
+                // Обновляем отображение
+                loadWithdrawalHistory();
+                
+                // Синхронизируем с ботом
+                if (window.Telegram && window.Telegram.WebApp) {
+                    const data = {
+                        action: 'withdrawal_completed',
+                        withdrawal_id: withdrawalId
+                    };
+                    window.Telegram.WebApp.sendData(JSON.stringify(data));
+                }
+            }
+        }
+
+        // Получение текста статуса для сделок
+        function getStatusText(status) {
+            const statusMap = {
+                'active': 'Активна',
+                'completed': 'Завершена',
+                'cancelled': 'Отменена'
+            };
+            return statusMap[status] || status;
+        }
+
+        // Получение текста статуса для выводов
+        function getWithdrawalStatusText(status) {
+            const statusMap = {
+                'pending': 'Ожидание',
+                'processed': 'Обработана',
+                'completed': 'Выполнена',
+                'cancelled': 'Отменена'
+            };
+            return statusMap[status] || status;
+        }
+
+        // Получение звезд рейтинга
+        function getRatingStars(rating) {
+            const fullStars = Math.floor(rating);
+            const halfStar = rating - fullStars >= 0.5;
+            const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+            
+            return '★'.repeat(fullStars) + (halfStar ? '⭐' : '') + '☆'.repeat(emptyStars);
+        }
+
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            // Переключение темы
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            // Навигация
+            createDealBtn.addEventListener('click', () => showScreen('createDeal'));
+            myDealsBtn.addEventListener('click', () => {
+                loadDealsFromBot();
+                showScreen('myDeals');
+            });
+            withdrawBtn.addEventListener('click', () => showScreen('withdraw'));
+            withdrawalHistoryBtn.addEventListener('click', () => {
+                loadWithdrawalHistoryFromBot();
+                showScreen('withdrawalHistory');
+            });
+            profileBtn.addEventListener('click', () => {
+                loadUserDataFromBot();
+                showScreen('profile');
+            });
+            changeRequisitesBtn.addEventListener('click', () => showScreen('requisites'));
+            
+            // Кнопка возврата
+            backButton.addEventListener('click', () => showScreen('main'));
+            backToMainFromSuccess.addEventListener('click', () => showScreen('main'));
+            
+            // Выбор валюты
+            currencyOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    currencyOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Создание сделки
+            createDealSubmit.addEventListener('click', createDeal);
+            
+            // Выбор метода вывода
+            withdrawOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    withdrawOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Вывод средств
+            withdrawSubmit.addEventListener('click', withdrawFunds);
+            
+            // Копирование ссылки на сделку
+            document.getElementById('copyDealLink').addEventListener('click', copyDealLink);
+            
+            // Сохранение реквизитов
+            saveRequisitesBtn.addEventListener('click', saveRequisites);
+            
+            // Обработчик для копирования ссылок сделок (делегирование событий)
+            dealsList.addEventListener('click', function(e) {
+                if (e.target.classList.contains('copy-deal-link')) {
+                    const link = e.target.getAttribute('data-link');
+                    copyToClipboard(link);
+                }
+            });
+        }
+
+        // Переключение темы
+        function toggleTheme() {
+            if (document.body.classList.contains('light-theme')) {
+                document.body.classList.remove('light-theme');
+                themeToggle.innerHTML = '<i>🌙</i>';
+                themeToggle.style.background = 'var(--bg-tertiary)';
+                themeToggle.style.borderColor = 'var(--accent-color)';
+                themeToggle.style.color = 'var(--accent-color)';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.add('light-theme');
+                themeToggle.innerHTML = '<i>☀️</i>';
+                themeToggle.style.background = 'var(--bg-tertiary)';
+                themeToggle.style.borderColor = 'var(--accent-color)';
+                themeToggle.style.color = 'var(--accent-color)';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Показать определенный экран
+        function showScreen(screen) {
+            // Скрыть все экраны
+            mainScreen.classList.add('hidden');
+            createDealScreen.classList.add('hidden');
+            myDealsScreen.classList.add('hidden');
+            withdrawScreen.classList.add('hidden');
+            withdrawalHistoryScreen.classList.add('hidden');
+            profileScreen.classList.add('hidden');
+            requisitesScreen.classList.add('hidden');
+            dealSuccessScreen.classList.add('hidden');
+            
+            // Показать/скрыть кнопку возврата
+            if (screen === 'main') {
+                backButton.classList.add('hidden');
+            } else {
+                backButton.classList.remove('hidden');
+            }
+            
+            // Показать нужный экран
+            currentScreen = screen;
+            switch(screen) {
+                case 'main':
+                    mainScreen.classList.remove('hidden');
+                    break;
+                case 'createDeal':
+                    createDealScreen.classList.remove('hidden');
+                    break;
+                case 'myDeals':
+                    myDealsScreen.classList.remove('hidden');
+                    break;
+                case 'withdraw':
+                    withdrawScreen.classList.remove('hidden');
+                    break;
+                case 'withdrawalHistory':
+                    withdrawalHistoryScreen.classList.remove('hidden');
+                    break;
+                case 'profile':
+                    profileScreen.classList.remove('hidden');
+                    break;
+                case 'requisites':
+                    requisitesScreen.classList.remove('hidden');
+                    break;
+                case 'dealSuccess':
+                    dealSuccessScreen.classList.remove('hidden');
+                    break;
+            }
+        }
+
+        // Создание сделки
+        function createDeal() {
+            const giftLinks = document.getElementById('giftLinks').value;
+            const selectedCurrency = document.querySelector('.currency-option.selected');
+            const amount = document.getElementById('dealAmount').value;
+            
+            if (!giftLinks.trim()) {
+                alert('Пожалуйста, введите ссылки на подарки');
+                return;
+            }
+            
+            if (!selectedCurrency) {
+                alert('Пожалуйста, выберите валюту');
+                return;
+            }
+            
+            if (!amount || amount <= 0) {
+                alert('Пожалуйста, введите корректную сумму');
+                return;
+            }
+            
+            const currency = selectedCurrency.getAttribute('data-currency');
+            
+            // Интеграция с Telegram Bot API
+            if (window.Telegram && window.Telegram.WebApp) {
+                const data = {
+                    action: 'create_deal',
+                    gift_links: giftLinks,
+                    currency: currency,
+                    amount: parseFloat(amount)
+                };
+                
+                window.Telegram.WebApp.sendData(JSON.stringify(data));
+                
+                // Показываем уведомление о создании сделки
+                alert('Сделка успешно создана! Ссылка будет отправлена в боте.');
+                
+                // Обновляем данные пользователя
+                setTimeout(() => {
+                    loadUserDataFromBot();
+                }, 1000);
+            }
+            
+            // Создание новой сделки для локального отображения
+            const newDeal = {
+                id: 'deal_' + Date.now(),
+                amount: parseFloat(amount),
+                currency: currency,
+                description: giftLinks,
+                status: 'active',
+                created: new Date().toLocaleString('ru-RU'),
+                link: `https://t.me/CrystalsGarantBot?start=deal_${Date.now()}`
+            };
+            
+            // Добавление сделки в список
+            userDeals.unshift(newDeal);
+            
+            // Обновление ссылки на экране успеха
+            document.getElementById('dealLink').textContent = newDeal.link;
+            
+            // Показать экран успеха
+            showScreen('dealSuccess');
+            
+            // Очистка формы
+            document.getElementById('giftLinks').value = '';
+            document.getElementById('dealAmount').value = '';
+            currencyOptions.forEach(opt => opt.classList.remove('selected'));
+        }
+
+        // Вывод средств
+        function withdrawFunds() {
+            const selectedMethod = document.querySelector('.withdraw-option.selected');
+            const amount = document.getElementById('withdrawAmount').value;
+            
+            if (!selectedMethod) {
+                alert('Пожалуйста, выберите метод вывода');
+                return;
+            }
+            
+            if (!amount || amount <= 0) {
+                alert('Пожалуйста, введите корректную сумму');
+                return;
+            }
+            
+            if (amount > userData.balance) {
+                alert('Недостаточно средств на балансе');
+                return;
+            }
+            
+            const method = selectedMethod.getAttribute('data-method');
+            const requisites = method === 'TON' ? userData.tonWallet : userData.cardDetails;
+            
+            // Создание новой заявки на вывод
+            const newWithdrawal = {
+                id: 'withdraw_' + Date.now(),
+                amount: parseFloat(amount),
+                currency: 'TON',
+                method: method === 'TON' ? 'TON кошелек' : 'Банковская карта',
+                status: 'pending',
+                created: new Date().toLocaleString('ru-RU'),
+                createdAt: new Date().toISOString(),
+                requisites: requisites
+            };
+            
+            // Добавление в историю выводов
+            withdrawalHistory.unshift(newWithdrawal);
+            saveWithdrawalHistory();
+            
+            // Обновляем баланс пользователя
+            userData.balance -= parseFloat(amount);
+            updateUserData({ balance: userData.balance });
+            
+            // Запускаем таймер на 20 минут
+            startWithdrawalTimer(newWithdrawal.id, newWithdrawal.createdAt);
+            
+            // Интеграция с Telegram Bot API для вывода средств
+            if (window.Telegram && window.Telegram.WebApp) {
+                const data = {
+                    action: 'withdraw_funds',
+                    method: method,
+                    amount: parseFloat(amount),
+                    requisites: requisites,
+                    new_balance: userData.balance
+                };
+                
+                window.Telegram.WebApp.sendData(JSON.stringify(data));
+                
+                // Показываем уведомление о выводе
+                alert('Заявка на вывод средств создана! Средства поступят в течение 20 минут.');
+            } else {
+                alert('Заявка на вывод средств создана! Средства поступят в течение 20 минут.');
+            }
+            
+            showScreen('main');
+        }
+
+        // Сохранение реквизитов
+        function saveRequisites() {
+            const tonWallet = document.getElementById('tonWalletInput').value;
+            const cardDetails = document.getElementById('cardDetailsInput').value;
+            
+            if (!tonWallet.trim() && !cardDetails.trim()) {
+                alert('Пожалуйста, заполните хотя бы один из реквизитов');
+                return;
+            }
+            
+            // Интеграция с Telegram Bot API для сохранения реквизитов
+            if (window.Telegram && window.Telegram.WebApp) {
+                const data = {
+                    action: 'update_requisites',
+                    ton_wallet: tonWallet,
+                    card_details: cardDetails
+                };
+                
+                window.Telegram.WebApp.sendData(JSON.stringify(data));
+                
+                alert('Реквизиты успешно сохранены в боте!');
+            } else {
+                alert('Реквизиты успешно сохранены!');
+            }
+            
+            // Обновление данных пользователя
+            userData.tonWallet = tonWallet;
+            userData.cardDetails = cardDetails;
+            
+            // Обновление отображаемых реквизитов
+            document.getElementById('tonWallet').textContent = tonWallet || 'Не указан';
+            document.getElementById('cardDetails').textContent = cardDetails || 'Не указаны';
+            
+            showScreen('profile');
+        }
+
+        // Копирование ссылки на сделку
+        function copyDealLink() {
+            const dealLink = document.getElementById('dealLink').textContent;
+            copyToClipboard(dealLink);
+        }
+
+        // Универсальная функция копирования в буфер обмена
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    alert('Ссылка скопирована в буфер обмена!');
+                })
+                .catch(err => {
+                    console.error('Ошибка копирования: ', err);
+                    // Запасной вариант для старых браузеров
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    alert('Ссылка скопирована в буфер обмена!');
+                });
+        }
     </script>
 </body>
 </html>
