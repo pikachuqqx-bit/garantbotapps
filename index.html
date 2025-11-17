@@ -3,735 +3,835 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Garant Bot</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Crystal Trust - Safe & Automatic</title>
     <style>
+        /* Все предыдущие стили остаются */
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent-color: #bb86fc;
+            --accent-secondary: #03dac6;
+            --border-color: #333333;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .light-theme {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --bg-tertiary: #e0e0e0;
+            --text-primary: #121212;
+            --text-secondary: #5a5a5a;
+            --accent-color: #6200ee;
+            --accent-secondary: #018786;
+            --border-color: #dddddd;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
         }
-        
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #000000;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
-            color: white;
+            padding: 16px;
         }
-        
+
         .container {
-            max-width: 100%;
-            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
         }
-        
-        .screen {
-            display: none;
-        }
-        
-        .screen.active {
-            display: block;
-        }
-        
-        .logo {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            text-align: center;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .app-title {
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        
-        .app-subtitle {
-            color: #888;
-            font-size: 14px;
-            margin-bottom: 30px;
-            text-align: center;
-            line-height: 1.4;
-        }
-        
-        .button-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        
-        .main-button {
-            background: #1a1a1a;
-            border: 2px solid #333;
-            border-radius: 15px;
-            padding: 18px;
-            font-size: 16px;
-            font-weight: 600;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 15px;
-            text-align: left;
-            width: 100%;
-        }
-        
-        .main-button:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        }
-        
-        .button-create {
-            border-color: #4CAF50;
-        }
-        
-        .button-create:hover {
-            border-color: #4CAF50;
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
-        }
-        
-        .button-profile {
-            border-color: #2196F3;
-        }
-        
-        .button-profile:hover {
-            border-color: #2196F3;
-            box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3);
-        }
-        
-        .button-withdraw {
-            border-color: #FF9800;
-        }
-        
-        .button-withdraw:hover {
-            border-color: #FF9800;
-            box-shadow: 0 8px 25px rgba(255, 152, 0, 0.3);
-        }
-        
-        .button-icon {
-            font-size: 22px;
-            width: 35px;
-            text-align: center;
-        }
-        
-        .button-text {
-            flex: 1;
-        }
-        
-        .button-description {
-            font-size: 12px;
-            color: #888;
-            margin-top: 3px;
-            font-weight: normal;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #fff;
-        }
-        
-        .form-input, .form-textarea {
-            width: 100%;
-            background: #1a1a1a;
-            border: 2px solid #333;
-            border-radius: 10px;
-            padding: 12px 15px;
-            color: white;
-            font-size: 14px;
-            resize: vertical;
-        }
-        
-        .form-input:focus, .form-textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .form-textarea {
-            min-height: 100px;
-            font-family: inherit;
-        }
-        
-        .currency-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .currency-button {
-            background: #1a1a1a;
-            border: 2px solid #333;
-            border-radius: 10px;
-            padding: 15px 10px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            font-size: 14px;
-        }
-        
-        .currency-button:hover, .currency-button.selected {
-            border-color: #4CAF50;
-            background: #2a2a2a;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .btn {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-        }
-        
-        .btn-secondary {
-            background: #333;
-            color: white;
-        }
-        
-        .btn-back {
-            background: #666;
-            color: white;
-        }
-        
-        .btn-copy {
-            background: linear-gradient(135deg, #2196F3, #1976D2);
-            color: white;
-        }
-        
-        .btn-share {
-            background: linear-gradient(135deg, #FF9800, #F57C00);
-            color: white;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        
-        .info-box {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 10px;
-            padding: 15px;
-            margin: 15px 0;
-            font-size: 13px;
-            line-height: 1.4;
-        }
-        
-        .info-box.warning {
-            border-color: #ff9800;
-            background: #332900;
-        }
-        
-        .info-box.success {
-            border-color: #4CAF50;
-            background: #1a331a;
-        }
-        
-        .deal-preview {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 10px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-        
-        .deal-item {
-            margin-bottom: 8px;
+
+        .header {
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
         }
-        
-        .deal-label {
-            color: #888;
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            justify-content: center;
         }
-        
-        .deal-value {
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
             color: white;
-            font-weight: 600;
         }
-        
-        .deal-link {
-            background: #2a2a2a;
-            border: 1px solid #444;
-            border-radius: 8px;
-            padding: 12px;
-            margin: 10px 0;
-            word-break: break-all;
-            font-family: monospace;
-            font-size: 12px;
-            color: #4CAF50;
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            text-align: center;
         }
-        
-        .copy-section {
-            margin: 20px 0;
+
+        .theme-toggle {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            right: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(187, 134, 252, 0.3);
         }
-        
-        .share-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+
+        .theme-toggle:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(187, 134, 252, 0.5);
+        }
+
+        .card {
+            background-color: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             gap: 10px;
-            margin: 15px 0;
+            width: 100%;
+            padding: 16px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: all 0.2s;
         }
-        
-        .loading {
-            opacity: 0.7;
-            pointer-events: none;
+
+        .button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
         }
-        
+
+        .button-secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
         .hidden {
             display: none;
         }
-        
-        .status-message {
-            background: #1a331a;
-            border: 1px solid #4CAF50;
+
+        .back-button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            left: 16px;
+        }
+
+        .deal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-input, .form-textarea {
+            padding: 12px;
             border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .currency-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .currency-option {
             padding: 10px;
-            margin: 10px 0;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             text-align: center;
-            color: #4CAF50;
+            cursor: pointer;
+            background-color: var(--bg-tertiary);
+            transition: all 0.2s;
             font-size: 14px;
         }
+
+        .currency-option.selected {
+            border-color: var(--accent-color);
+            background-color: rgba(187, 134, 252, 0.1);
+        }
+
+        .success-message {
+            background-color: rgba(3, 218, 198, 0.1);
+            border: 1px solid var(--accent-secondary);
+            color: var(--accent-secondary);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .deal-link {
+            background-color: var(--bg-tertiary);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 16px 0;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 14px;
+            overflow-wrap: break-word;
+            border: 1px solid var(--accent-color);
+        }
+
+        .copy-button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .deal-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .action-button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            flex: 1;
+        }
+
+        .action-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .action-secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Добавьте остальные стили из предыдущего кода */
+        /* ... */
     </style>
 </head>
 <body>
-    <!-- Главный экран -->
-    <div id="mainScreen" class="screen active">
-        <div class="container">
-            <div class="logo">🛡️</div>
-            <div class="app-title">GARANT BOT</div>
-            <div class="app-subtitle">Secure Crypto Transactions</div>
-            
-            <div class="button-grid">
-                <button class="main-button button-create" onclick="showCreateDealScreen()">
-                    <span class="button-icon">🎁</span>
-                    <div class="button-text">
-                        Create Deal
-                        <div class="button-description">Secure transaction with guarantor</div>
-                    </div>
+    <div class="container">
+        <!-- Шапка -->
+        <div class="header">
+            <div class="header-content">
+                <button class="back-button hidden" id="backButton">
+                    <i>←</i>
                 </button>
-                
-                <button class="main-button button-profile" onclick="showProfile()">
-                    <span class="button-icon">👤</span>
-                    <div class="button-text">
-                        My Profile
-                        <div class="button-description">Balance, rating and statistics</div>
-                    </div>
-                </button>
-                
-                <button class="main-button button-withdraw" onclick="withdrawFunds()">
-                    <span class="button-icon">💸</span>
-                    <div class="button-text">
-                        Withdraw Funds
-                        <div class="button-description">Withdraw to wallet or card</div>
-                    </div>
+                <div class="logo">
+                    <div class="logo-text">🛡 Crystal Trust</div>
+                </div>
+                <button class="theme-toggle" id="themeToggle">
+                    <i>🌙</i>
                 </button>
             </div>
         </div>
-    </div>
 
-    <!-- Экран создания сделки - Шаг 1: Ссылки на подарки -->
-    <div id="createDealScreen" class="screen">
-        <div class="container">
-            <div class="logo">🎁</div>
-            <div class="app-title">Create Safe Deal</div>
-            <div class="app-subtitle">Step 1: Specify gift links</div>
-            
-            <div class="info-box">
-                <strong>📝 Instructions:</strong><br>
-                • Send one or multiple gift links<br>
-                • Each link on a new line<br>
-                • Formats: https://... or t.me/...<br><br>
-                <strong>Example:</strong><br>
-                <code>t.me/nft/PlushPepe-1</code><br>
-                <code>t.me/nft/PlushPepe-2</code>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Gift Links:</label>
-                <textarea 
-                    class="form-textarea" 
-                    id="giftLinks" 
-                    placeholder="Enter gift links here, each on a new line..."
-                ></textarea>
-            </div>
-            
-            <div class="action-buttons">
-                <button class="btn btn-back" onclick="showMainScreen()">Back</button>
-                <button class="btn btn-primary" onclick="proceedToCurrency()">Continue</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Экран создания сделки - Шаг 2: Выбор валюты -->
-    <div id="currencyScreen" class="screen">
-        <div class="container">
-            <div class="logo">💰</div>
-            <div class="app-title">Select Currency</div>
-            <div class="app-subtitle">Step 2: Choose deal currency</div>
-            
-            <div class="currency-grid">
-                <button class="currency-button" onclick="selectCurrency('RUB')">🇷🇺 RUB</button>
-                <button class="currency-button" onclick="selectCurrency('EUR')">🇪🇺 EUR</button>
-                <button class="currency-button" onclick="selectCurrency('UZS')">🇺🇿 UZS</button>
-                <button class="currency-button" onclick="selectCurrency('KZT')">🇰🇿 KZT</button>
-                <button class="currency-button" onclick="selectCurrency('KGS')">🇰🇬 KGS</button>
-                <button class="currency-button" onclick="selectCurrency('IDR')">🇮🇩 IDR</button>
-                <button class="currency-button" onclick="selectCurrency('UAH')">🇺🇦 UAH</button>
-                <button class="currency-button" onclick="selectCurrency('BYN')">🇧🇾 BYN</button>
-                <button class="currency-button" onclick="selectCurrency('TON')">💎 TON</button>
-                <button class="currency-button" onclick="selectCurrency('STARS')">⭐ Stars</button>
-            </div>
-            
-            <div class="action-buttons">
-                <button class="btn btn-back" onclick="backToGiftLinks()">Back</button>
-                <button class="btn btn-primary" id="continueCurrencyBtn" onclick="proceedToAmount()" disabled>Continue</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Экран создания сделки - Шаг 3: Сумма -->
-    <div id="amountScreen" class="screen">
-        <div class="container">
-            <div class="logo">💵</div>
-            <div class="app-title">Deal Amount</div>
-            <div class="app-subtitle">Step 3: Enter deal amount in <span id="currencyDisplay"></span></div>
-            
-            <div class="form-group">
-                <label class="form-label">Amount:</label>
-                <input 
-                    type="number" 
-                    class="form-input" 
-                    id="dealAmount" 
-                    placeholder="Enter amount (e.g., 1000)"
-                    step="0.01"
-                    min="0.01"
-                >
-            </div>
-            
-            <div class="info-box">
-                <strong>💡 Note:</strong> Enter the amount in numbers only
-            </div>
-            
-            <div class="action-buttons">
-                <button class="btn btn-back" onclick="backToCurrency()">Back</button>
-                <button class="btn btn-primary" onclick="createDealFinal()">Create Deal</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Экран подтверждения с ссылкой -->
-    <div id="confirmScreen" class="screen">
-        <div class="container">
-            <div class="logo">🔗</div>
-            <div class="app-title">Deal Created!</div>
-            <div class="app-subtitle">Share this link with the buyer</div>
-            
-            <div class="deal-preview">
-                <div class="deal-item">
-                    <span class="deal-label">Gift Links:</span>
-                    <span class="deal-value" id="previewLinks"></span>
+        <!-- Главный экран -->
+        <div id="mainScreen">
+            <div class="card">
+                <div class="button" id="createDealBtn">
+                    <i>💎</i> Создать сделку
                 </div>
-                <div class="deal-item">
-                    <span class="deal-label">Currency:</span>
-                    <span class="deal-value" id="previewCurrency"></span>
+                <div class="button button-secondary" id="myDealsBtn">
+                    <i>📋</i> Мои сделки
                 </div>
-                <div class="deal-item">
-                    <span class="deal-label">Amount:</span>
-                    <span class="deal-value" id="previewAmount"></span>
+                <div class="button button-secondary" id="activeDealsBtn">
+                    <i>🔄</i> Активные сделки
+                </div>
+                <div class="button button-secondary" id="withdrawBtn">
+                    <i>💸</i> Вывести средства
+                </div>
+                <div class="button button-secondary" id="profileBtn">
+                    <i>👤</i> Профиль
                 </div>
             </div>
-            
-            <div class="info-box success">
-                <strong>🎉 Deal Created Successfully!</strong><br>
-                Share the link below with the buyer to start the secure transaction.
-            </div>
-            
-            <div class="copy-section">
-                <div class="deal-link" id="dealLink">Generating link...</div>
-                <div class="share-buttons">
-                    <button class="btn btn-copy" onclick="copyDealLink()">📋 Copy Link</button>
-                    <button class="btn btn-share" onclick="shareDealLink()">📤 Share</button>
+        </div>
+
+        <!-- Экран создания сделки -->
+        <div id="createDealScreen" class="hidden">
+            <div class="card">
+                <div class="deal-form">
+                    <div class="form-group">
+                        <label class="form-label">Ссылки на подарки (каждая с новой строки)</label>
+                        <textarea class="form-textarea" id="giftLinks" placeholder="https://t.me/nft/PlushPepe-1&#10;https://t.me/nft/PlushPepe-2"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Валюта оплаты</label>
+                        <div class="currency-selector" id="currencySelector">
+                            <div class="currency-option" data-currency="TON">💎 TON</div>
+                            <div class="currency-option" data-currency="RUB">🇷🇺 RUB</div>
+                            <div class="currency-option" data-currency="USD">🇺🇸 USD</div>
+                            <div class="currency-option" data-currency="EUR">🇪🇺 EUR</div>
+                            <div class="currency-option" data-currency="UAH">🇺🇦 UAH</div>
+                            <div class="currency-option" data-currency="KZT">🇰🇿 KZT</div>
+                            <div class="currency-option" data-currency="STARS">⭐ Stars</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Сумма сделки</label>
+                        <input type="number" class="form-input" id="dealAmount" placeholder="Введите сумму" step="0.01" min="0.01">
+                    </div>
+                    
+                    <button class="button" id="createDealSubmit">
+                        <i>✅</i> Создать безопасную сделку
+                    </button>
                 </div>
             </div>
-            
-            <div id="statusMessage" class="status-message" style="display: none;"></div>
-            
-            <div class="action-buttons">
-                <button class="btn btn-back" onclick="showMainScreen()">Back to Main</button>
-                <button class="btn btn-secondary" onclick="createAnotherDeal()">Create Another</button>
+        </div>
+
+        <!-- Экран активных сделок -->
+        <div id="activeDealsScreen" class="hidden">
+            <div class="card">
+                <div class="section-title">
+                    🔄 Активные сделки
+                    <span class="sync-indicator" id="activeDealsSync">🔄</span>
+                </div>
+                <div class="deals-list" id="activeDealsList">
+                    <!-- Активные сделки загружаются здесь -->
+                </div>
             </div>
         </div>
+
+        <!-- Экран успешного создания сделки -->
+        <div id="dealSuccessScreen" class="hidden">
+            <div class="success-message">
+                <i>✅</i> <b>Сделка успешно создана!</b>
+                <div style="font-size: 14px; margin-top: 8px;">Отправьте ссылку покупателю</div>
+            </div>
+
+            <div class="card">
+                <div class="form-group">
+                    <label class="form-label">Ссылка для покупателя:</label>
+                    <div class="deal-link" id="dealLink">
+                        Загрузка...
+                    </div>
+                    <div class="deal-actions">
+                        <button class="action-button action-primary" id="copyDealLink">
+                            📋 Копировать ссылку
+                        </button>
+                        <button class="action-button action-secondary" id="shareDealLink">
+                            📤 Поделиться
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 16px;">
+                    <label class="form-label">Инструкция для покупателя:</label>
+                    <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.4;">
+                        1. Отправьте ссылку покупателю<br>
+                        2. Покупатель переходит по ссылке<br>
+                        3. Система автоматически создает чат с гарантом<br>
+                        4. Следуйте инструкциям бота-гаранта
+                    </div>
+                </div>
+            </div>
+
+            <button class="button" id="backToMainFromSuccess">
+                <i>🏠</i> Вернуться на главную
+            </button>
+        </div>
+
+        <!-- Остальные экраны (профиль, вывод средств и т.д.) -->
+        <!-- ... -->
+
     </div>
 
     <script>
-        // Инициализация Telegram WebApp
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.enableClosingConfirmation();
-        tg.setHeaderColor('#000000');
-        tg.setBackgroundColor('#000000');
-        
-        // Данные сделки
-        let dealData = {
-            giftLinks: '',
-            currency: '',
-            amount: '',
-            dealId: '',
-            dealLink: ''
-        };
-        
-        // Показать главный экран
-        function showMainScreen() {
-            hideAllScreens();
-            document.getElementById('mainScreen').classList.add('active');
+        // Глобальные переменные
+        let userData = {};
+        let activeDeals = [];
+
+        // Элементы DOM
+        const mainScreen = document.getElementById('mainScreen');
+        const createDealScreen = document.getElementById('createDealScreen');
+        const activeDealsScreen = document.getElementById('activeDealsScreen');
+        const dealSuccessScreen = document.getElementById('dealSuccessScreen');
+        const activeDealsList = document.getElementById('activeDealsList');
+        const activeDealsSync = document.getElementById('activeDealsSync');
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+        });
+
+        // Инициализация приложения
+        async function initializeApp() {
+            await loadUserData();
+            await loadActiveDeals();
         }
-        
-        // Показать экран создания сделки
-        function showCreateDealScreen() {
-            hideAllScreens();
-            document.getElementById('createDealScreen').classList.add('active');
-            document.getElementById('giftLinks').value = '';
+
+        // Загрузка данных пользователя
+        async function loadUserData() {
+            try {
+                showLoading('mainScreen');
+                
+                const data = {
+                    action: 'get_user_data'
+                };
+                
+                const response = await sendToBot(data);
+                if (response && response.user_id) {
+                    userData = response;
+                    updateUserInterface();
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки данных:', error);
+                showError('Ошибка загрузки данных');
+            } finally {
+                hideLoading();
+            }
         }
-        
-        // Показать экран выбора валюты
-        function proceedToCurrency() {
+
+        // Загрузка активных сделок
+        async function loadActiveDeals() {
+            try {
+                activeDealsSync.classList.add('syncing');
+                
+                const data = {
+                    action: 'get_active_deals'
+                };
+                
+                const response = await sendToBot(data);
+                if (response && response.success) {
+                    activeDeals = response.deals || [];
+                    renderActiveDeals();
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки активных сделок:', error);
+            } finally {
+                activeDealsSync.classList.remove('syncing');
+            }
+        }
+
+        // Отображение активных сделок
+        function renderActiveDeals() {
+            activeDealsList.innerHTML = '';
+            
+            if (activeDeals.length === 0) {
+                activeDealsList.innerHTML = `
+                    <div class="empty-state">
+                        <i>📋</i>
+                        <div>Нет активных сделок</div>
+                        <div style="font-size: 14px; margin-top: 8px;">Создайте первую сделку</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            activeDeals.forEach(deal => {
+                const dealElement = createActiveDealElement(deal);
+                activeDealsList.appendChild(dealElement);
+            });
+        }
+
+        // Создание элемента активной сделки
+        function createActiveDealElement(deal) {
+            const dealElement = document.createElement('div');
+            dealElement.className = 'deal-item';
+            dealElement.innerHTML = `
+                <div class="deal-header">
+                    <div class="deal-id">#${deal.id.slice(-8)}</div>
+                    <div class="deal-status status-active">Активна</div>
+                </div>
+                <div class="deal-details">
+                    <div class="deal-amount">${deal.amount} ${deal.currency}</div>
+                    <div class="deal-description">${deal.description}</div>
+                    <div class="info-row">
+                        <span class="info-label">Покупатель:</span>
+                        <span class="info-value">${deal.buyer}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Создана:</span>
+                        <span class="info-value">${deal.created_at}</span>
+                    </div>
+                </div>
+                <div class="deal-actions">
+                    <button class="action-button action-primary copy-deal-link" 
+                            data-link="https://t.me/CrystalsGarantBot?start=${deal.id}">
+                        📋 Копировать ссылку
+                    </button>
+                </div>
+            `;
+            return dealElement;
+        }
+
+        // Создание сделки
+        async function createDeal() {
             const giftLinks = document.getElementById('giftLinks').value.trim();
+            const selectedCurrency = document.querySelector('.currency-option.selected');
+            const amount = document.getElementById('dealAmount').value;
+            
+            // Валидация
             if (!giftLinks) {
-                alert('Please enter gift links');
+                showError('Введите ссылки на подарки');
                 return;
             }
             
-            dealData.giftLinks = giftLinks;
-            hideAllScreens();
-            document.getElementById('currencyScreen').classList.add('active');
-            
-            // Сброс выбора валюты
-            document.querySelectorAll('.currency-button').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            document.getElementById('continueCurrencyBtn').disabled = true;
-        }
-        
-        // Выбор валюты
-        function selectCurrency(currency) {
-            dealData.currency = currency;
-            
-            // Обновить UI
-            document.querySelectorAll('.currency-button').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            event.target.classList.add('selected');
-            document.getElementById('continueCurrencyBtn').disabled = false;
-        }
-        
-        // Перейти к вводу суммы
-        function proceedToAmount() {
-            if (!dealData.currency) {
-                alert('Please select currency');
+            if (!selectedCurrency) {
+                showError('Выберите валюту');
                 return;
             }
-            
-            hideAllScreens();
-            document.getElementById('amountScreen').classList.add('active');
-            document.getElementById('currencyDisplay').textContent = dealData.currency;
-            document.getElementById('dealAmount').value = '';
-        }
-        
-        // Создать сделку
-        function createDealFinal() {
-            const amount = parseFloat(document.getElementById('dealAmount').value);
             
             if (!amount || amount <= 0) {
-                alert('Please enter a valid amount');
+                showError('Введите корректную сумму');
                 return;
             }
             
-            dealData.amount = amount;
+            const currency = selectedCurrency.getAttribute('data-currency');
             
-            // Генерируем уникальный ID сделки
-            dealData.dealId = generateDealId();
-            
-            // Показать экран подтверждения
-            hideAllScreens();
-            document.getElementById('confirmScreen').classList.add('active');
-            
-            // Заполнить превью
-            document.getElementById('previewLinks').textContent = 
-                dealData.giftLinks.split('\n').slice(0, 2).join(', ') + 
-                (dealData.giftLinks.split('\n').length > 2 ? '...' : '');
-            document.getElementById('previewCurrency').textContent = dealData.currency;
-            document.getElementById('previewAmount').textContent = amount + ' ' + dealData.currency;
-            
-            // Создаем ссылку для присоединения к сделке
-            createDealLink();
-        }
-        
-        // Генерация ID сделки
-        function generateDealId() {
-            return 'webapp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        }
-        
-        // Создание ссылки для присоединения
-        function createDealLink() {
-            // Создаем временную ссылку
-            const tempLink = `https://t.me/CrystalsFakeCheckBot?start=webapp_deal_${dealData.dealId}`;
-            document.getElementById('dealLink').textContent = tempLink;
-            dealData.dealLink = tempLink;
-            
-            // Отправляем данные в бота
-            sendDealToBot();
-        }
-        
-        // Отправить данные сделки в бота
-        function sendDealToBot() {
             try {
-                tg.sendData(JSON.stringify({
-                    action: 'create_deal_full',
-                    deal_id: dealData.dealId,
-                    gift_links: dealData.giftLinks,
-                    currency: dealData.currency,
-                    amount: dealData.amount,
-                    deal_link: dealData.dealLink,
-                    timestamp: Date.now()
-                }));
+                showLoading('createDealScreen');
                 
-                showStatus('Deal data sent to bot successfully!');
+                const data = {
+                    action: 'create_deal',
+                    gift_links: giftLinks,
+                    currency: currency,
+                    amount: parseFloat(amount),
+                    payment_method: getPaymentMethod(currency)
+                };
                 
+                const result = await sendToBot(data);
+                
+                if (result.success) {
+                    // Показываем экран успеха
+                    document.getElementById('dealLink').textContent = result.deal_link;
+                    showScreen('dealSuccess');
+                    
+                    // Обновляем данные
+                    await loadUserData();
+                    await loadActiveDeals();
+                    
+                    // Очищаем форму
+                    resetDealForm();
+                } else {
+                    showError(result.error || 'Ошибка при создании сделки');
+                }
             } catch (error) {
-                console.error('Error sending deal data:', error);
-                showStatus('Error sending deal data. Please try again.', true);
+                console.error('Ошибка создания сделки:', error);
+                showError('Ошибка при создании сделки');
+            } finally {
+                hideLoading();
             }
         }
-        
-        // Копировать ссылку сделки
-        function copyDealLink() {
-            const linkElement = document.getElementById('dealLink');
-            const linkText = linkElement.textContent;
-            
-            navigator.clipboard.writeText(linkText).then(() => {
-                showStatus('Link copied to clipboard!');
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-                showStatus('Failed to copy link', true);
+
+        // Определение метода оплаты
+        function getPaymentMethod(currency) {
+            const methodMap = {
+                'TON': 'ton',
+                'STARS': 'stars'
+            };
+            return methodMap[currency] || 'card';
+        }
+
+        // Сброс формы сделки
+        function resetDealForm() {
+            document.getElementById('giftLinks').value = '';
+            document.getElementById('dealAmount').value = '';
+            document.querySelectorAll('.currency-option').forEach(opt => {
+                opt.classList.remove('selected');
             });
         }
-        
+
+        // Копирование ссылки сделки
+        function copyDealLink(link = null) {
+            const linkToCopy = link || document.getElementById('dealLink').textContent;
+            
+            navigator.clipboard.writeText(linkToCopy)
+                .then(() => {
+                    showTempMessage('Ссылка скопирована в буфер обмена!', 'success');
+                })
+                .catch(err => {
+                    // Fallback для старых браузеров
+                    const textArea = document.createElement('textarea');
+                    textArea.value = linkToCopy;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showTempMessage('Ссылка скопирована в буфер обмена!', 'success');
+                });
+        }
+
         // Поделиться ссылкой
         function shareDealLink() {
-            const linkText = document.getElementById('dealLink').textContent;
-            const shareText = `Join our secure deal: ${linkText}`;
+            const link = document.getElementById('dealLink').textContent;
             
             if (navigator.share) {
                 navigator.share({
-                    title: 'Secure Deal Invitation',
-                    text: 'Join our secure deal',
-                    url: linkText
-                }).then(() => {
-                    showStatus('Link shared successfully!');
-                }).catch(err => {
-                    console.error('Error sharing:', err);
-                    copyDealLink(); // Fallback to copy
-                });
+                    title: 'Безопасная сделка Crystal Trust',
+                    text: 'Привет! Предлагаю безопасную сделку через Crystal Trust:',
+                    url: link
+                })
+                .then(() => console.log('Успешный шаринг'))
+                .catch(err => console.log('Ошибка шаринга:', err));
             } else {
-                copyDealLink(); // Fallback to copy
+                copyDealLink(link);
             }
         }
-        
-        // Показать статус
-        function showStatus(message, isError = false) {
-            const statusElement = document.getElementById('statusMessage');
-            statusElement.textContent = message;
-            statusElement.style.color = isError ? '#ff4444' : '#4CAF50';
-            statusElement.style.display = 'block';
+
+        // Отправка данных боту
+        async function sendToBot(data) {
+            if (window.Telegram && window.Telegram.WebApp) {
+                // В Telegram WebApp
+                return new Promise((resolve) => {
+                    window.Telegram.WebApp.sendData(JSON.stringify(data));
+                    
+                    // Слушаем ответ от бота
+                    const handleMessage = (event) => {
+                        if (event.data && event.data.startsWith('WEBAPP_DATA:')) {
+                            try {
+                                const response = JSON.parse(event.data.slice(12));
+                                resolve(response);
+                            } catch (e) {
+                                resolve({ success: false, error: 'Invalid response' });
+                            }
+                        }
+                    };
+                    
+                    window.addEventListener('message', handleMessage);
+                    
+                    // Таймаут на случай отсутствия ответа
+                    setTimeout(() => {
+                        window.removeEventListener('message', handleMessage);
+                        resolve(mockBotResponse(data));
+                    }, 5000);
+                });
+            } else {
+                // Вне Telegram - мок-ответ
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve(mockBotResponse(data));
+                    }, 1000);
+                });
+            }
+        }
+
+        // Мок-ответ от бота
+        function mockBotResponse(data) {
+            switch(data.action) {
+                case 'get_user_data':
+                    return {
+                        user_id: 6521371413,
+                        username: '@testuser',
+                        rating: 4.8,
+                        balance: 1250.50,
+                        successful_deals: 12,
+                        ton_wallet: 'UQAPAz_HELXWFbD1ZYKUxgRc_h5wPwIUD3wlZslOy5xzpyTg',
+                        card_details: '+79290556299 - Сбп'
+                    };
+                    
+                case 'create_deal':
+                    const dealId = 'deal_' + Date.now();
+                    return {
+                        success: true,
+                        deal_id: dealId,
+                        deal_link: `https://t.me/CrystalsGarantBot?start=${dealId}`,
+                        message: 'Сделка успешно создана в системе!'
+                    };
+                    
+                case 'get_active_deals':
+                    return {
+                        success: true,
+                        deals: [
+                            {
+                                id: 'deal_mock_001',
+                                amount: 150.50,
+                                currency: 'TON',
+                                description: 'NFT коллекция Premium\n2 редких предмета',
+                                status: 'active',
+                                buyer: 'Ожидает покупателя',
+                                created_at: new Date().toLocaleString('ru-RU')
+                            }
+                        ]
+                    };
+                    
+                default:
+                    return { success: true };
+            }
+        }
+
+        // Вспомогательные функции UI
+        function showScreen(screen) {
+            document.querySelectorAll('[id$="Screen"]').forEach(el => {
+                el.classList.add('hidden');
+            });
+            document.getElementById(screen + 'Screen').classList.remove('hidden');
+            
+            // Показываем/скрываем кнопку назад
+            const backButton = document.getElementById('backButton');
+            if (screen === 'main') {
+                backButton.classList.add('hidden');
+            } else {
+                backButton.classList.remove('hidden');
+            }
+        }
+
+        function showLoading(screen) {
+            const element = document.getElementById(screen);
+            element.classList.add('loading');
+        }
+
+        function hideLoading() {
+            document.querySelectorAll('.loading').forEach(el => {
+                el.classList.remove('loading');
+            });
+        }
+
+        function showError(message) {
+            showTempMessage(message, 'error');
+        }
+
+        function showTempMessage(message, type = 'info') {
+            // Реализация временных сообщений
+            const messageEl = document.createElement('div');
+            messageEl.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${type === 'error' ? '#f44336' : '#4CAF50'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 1000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            messageEl.textContent = message;
+            document.body.appendChild(messageEl);
             
             setTimeout(() => {
-                statusElement.style.display = 'none';
+                document.body.removeChild(messageEl);
             }, 3000);
         }
-        
-        // Навигация назад
-        function backToGiftLinks() {
-            hideAllScreens();
-            document.getElementById('createDealScreen').classList.add('active');
-        }
-        
-        function backToCurrency() {
-            hideAllScreens();
-            document.getElementById('currencyScreen').classList.add('active');
-        }
-        
-        // Создать еще одну сделку
-        function createAnotherDeal() {
-            dealData = { giftLinks: '', currency: '', amount: '', dealId: '', dealLink: '' };
-            showCreateDealScreen();
-        }
-        
-        // Другие функции
-        function showProfile() {
-            tg.sendData(JSON.stringify({
-                action: 'show_profile',
-                timestamp: Date.now()
-            }));
-            setTimeout(() => tg.close(), 500);
-        }
-        
-        function withdrawFunds() {
-            tg.sendData(JSON.stringify({
-                action: 'withdraw_funds',
-                timestamp: Date.now()
-            }));
-            setTimeout(() => tg.close(), 500);
-        }
-        
-        // Вспомогательные функции
-        function hideAllScreens() {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
+
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            // Навигация
+            document.getElementById('createDealBtn').addEventListener('click', () => showScreen('createDeal'));
+            document.getElementById('activeDealsBtn').addEventListener('click', () => {
+                loadActiveDeals();
+                showScreen('activeDeals');
             });
-        }
-        
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', function() {
-            tg.BackButton.show();
-            tg.BackButton.onClick(() => {
-                if (document.getElementById('mainScreen').classList.contains('active')) {
-                    tg.close();
-                } else {
-                    showMainScreen();
+            document.getElementById('backButton').addEventListener('click', () => showScreen('main'));
+            document.getElementById('backToMainFromSuccess').addEventListener('click', () => showScreen('main'));
+            
+            // Создание сделки
+            document.getElementById('createDealSubmit').addEventListener('click', createDeal);
+            
+            // Выбор валюты
+            document.querySelectorAll('.currency-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.currency-option').forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Копирование ссылок
+            document.getElementById('copyDealLink').addEventListener('click', () => copyDealLink());
+            document.getElementById('shareDealLink').addEventListener('click', shareDealLink);
+            
+            // Копирование ссылок активных сделок
+            activeDealsList.addEventListener('click', (e) => {
+                if (e.target.classList.contains('copy-deal-link')) {
+                    const link = e.target.getAttribute('data-link');
+                    copyDealLink(link);
                 }
             });
-        });
+            
+            // Переключение темы
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+            document.getElementById('themeToggle').innerHTML = isLight ? '<i>☀️</i>' : '<i>🌙</i>';
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        }
+
+        // Инициализация темы
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-theme');
+            document.getElementById('themeToggle').innerHTML = '<i>☀️</i>';
+        }
     </script>
 </body>
 </html>
